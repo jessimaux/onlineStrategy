@@ -1,0 +1,50 @@
+{% extends 'core/layout.html' %}
+{% load widget_tweaks %}
+{% load static %}
+{% block title %}{% endblock %}
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container">
+    <a class="navbar-brand" href="{% url 'index' %}">
+      <img src="{% static 'core/img/logo.png' %}" alt="logo">
+  </a>
+  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="{% url 'index' %}">Дашборд</a>
+      </li>
+      <li class="nav-item">
+          <a class="nav-link" href="{% url 'courses' %}">Программы</a>
+      </li>
+      <li class="nav-item">
+          <a class="nav-link" href="{% url 'route-profile' %}">Образовательный маршрут</a>
+      </li>
+      <li class="nav-item">
+          <a class="nav-link" href="{% url 'moderate-courses' %}">Модерация</a>
+      </li>
+      <li class="nav-item">
+          <a class="nav-link" href="#">Поддержка</a>
+      </li>
+  </ul>
+  <ul class="nav">
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="far fa-user fa-xs"></i> {{ user.get_full_name }}</a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="{% url 'profile' user.id %}">Редактировать аккаунт</a></li>
+            <li><a class="dropdown-item" href="{% url 'logout' %}">Выйти</a></li>
+        </ul>
+    </li>
+</ul>
+</div>
+</div>
+</nav>
+
+<div class="content">
+  {% block page %}
+  {% endblock %}
+</div>
+{% endblock %}

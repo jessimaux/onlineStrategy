@@ -1,0 +1,55 @@
+{% extends 'core/page-layout.html' %}
+{% load widget_tweaks %}
+{% load static %}
+{% block title %}Курсы{% endblock %}
+{% block page %}
+<div class="container">
+  <h2 class="my-3">Модерация</h2>
+
+  <nav class="nav nav-pills flex-column flex-sm-row">
+    <a class="text-sm-center nav-link" aria-current="page" href="{% url 'moderate-courses' %}">Курсы</a>
+    <a class="text-sm-center nav-link active" href="{% url 'moderate-profiles' %}">Аккаунты</a>
+    <a class="text-sm-center nav-link" href="#">Статистика</a>
+    <a class="text-sm-center nav-link" href="#">Отчеты</a>
+</nav>
+
+<div class="my-3 course-app">
+    <div class="row">
+      <div class="col-md-4 col-6 offset-md-8 offset-6">
+        <form class="float-end" method='GET'>
+          <input class="form-control"  placeholder="Поиск" type='text' name='q' value='{{ request.GET.q }}'>
+      </form>
+  </div>
+
+</div>
+</div>
+
+<div class="sign-table d-none d-sm-block d-block d-sm-none d-md-block">
+    <div class="row sign-row">
+      <div class="col-md-1">ID</div>
+      <div class="col-md-2">Имя</div>
+      <div class="col-md-2">Фамилия</div>
+      <div class="col-md-2">Отчество</div>
+      <div class="col-md-1">Регион</div>
+      <div class="col-md-2">Муниципалитет</div>
+      <div class="col-md-2">Организация</div>
+  </div>
+</div>
+
+{% for item in object_list %}
+<div class="sign-table__item">
+    <div class="row">
+      <div class="col-md-1"><a href="{% url 'moderate-profile-card' item.id %}">{{ item.id }}</a></div>
+    <div class="col-md-2">{{ item.first_name }}</div>
+    <div class="col-md-2">{{ item.last_name }}</div>
+    <div class="col-md-2">{{ item.middle_name }}</div>
+    <div class="col-md-1">{{ item.subject_of_country }}</div>
+    <div class="col-md-2">{{ item.municipality }}</div>
+    <div class="col-md-2">{{ item.work }}</div>
+</div>
+</div>
+{% empty %}
+<p>Аккаунтов нет</p>
+{% endfor %}
+</div>
+{% endblock %}

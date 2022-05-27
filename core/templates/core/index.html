@@ -1,0 +1,35 @@
+{% extends 'core/page-layout.html' %}
+{% load widget_tweaks %}
+{% load static %}
+{% block title %}Дашборд{% endblock %}
+{% block page %}
+<div class="container">
+  <h3 class="my-3">Мои заявки</h3>
+
+  <div class="sign-table d-none d-sm-block d-block d-sm-none d-md-block">
+    <div class="row sign-row">
+      <div class="col-md-4">Программа / мероприятие</div>
+      <div class="col-md-3">Тип мероприятия</div>
+      <div class="col-md-3">Сроки проведения</div>
+      <div class="col-md-2">Статус</div>
+    </div>
+  </div>
+
+  {% for sign in object_list %}
+  <div class="sign-table__item">
+    <div class="row">
+      <div class="col-md-4">
+        <a href="{% url 'sign' sign.id %}">{{ sign.course.title }}</a>
+        <p>№{{ sign.id }}</p>
+      </div>
+      <div class="col-md-3">{{ sign.course.get_type_display }}</div>
+      <div class="col-md-3">{{ sign.course.date_start|date:"d.m.Y" }} - {{ sign.course.date_end|date:"d.m.Y" }}</div>
+      <div class="col-md-2">{{ sign.get_status_display }}</div>
+    </div>
+  </div>
+
+  {% empty %}
+  <p>Заявок нет</p>
+  {% endfor %}
+</div>
+{% endblock %}

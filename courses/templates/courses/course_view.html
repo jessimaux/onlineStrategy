@@ -1,0 +1,70 @@
+{% extends 'core/page-layout.html' %}
+{% load widget_tweaks %}
+{% load static %}
+{% block title %}Курсы{% endblock %}
+{% block page %}
+<div class="container">
+  <h2 class="my-3">Модерация</h2>
+
+  <nav class="nav nav-pills flex-column flex-sm-row">
+    <a class="text-sm-center nav-link active" aria-current="page" href="{% url 'moderate-courses' %}">Курсы</a>
+    <a class="text-sm-center nav-link" href="{% url 'moderate-profiles' %}">Аккаунты</a>
+    <a class="text-sm-center nav-link" href="#">Статистика</a>
+    <a class="text-sm-center nav-link" href="#">Отчеты</a>
+  </nav>
+
+  <div class="my-3 course-app">
+    <div class="row">
+      <div class="col-md-8 col-6">
+        <h5> {{ course_title }} </h5>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-4 col-6 offset-md-8 offset-6">
+        <form class="float-end" method='GET'>
+          <input class="form-control"  placeholder="Поиск" type='text' name='q' value='{{ request.GET.q }}'>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="sign-table d-none d-sm-block d-block d-sm-none d-md-block">
+    <div class="row sign-row">
+      <div class="col-md-1">ID</div>
+      <div class="col-md-2">Фамилия</div>
+      <div class="col-md-2">Имя</div>
+      <div class="col-md-2">Отчество</div>
+      <div class="col-md-1">Регион</div>
+      <div class="col-md-2">Муниципалитет</div>
+      <div class="col-md-2">Статус</div>
+    </div>
+  </div>
+
+  <form method='POST'>
+    {% csrf_token %}
+    {{ management_form }}
+    {% for item, form in object_list %}
+    <div class="sign-table__item">
+      <div class="row">
+        <div class="col-md-1">{{ item.id }}</div>
+        <div class="col-md-2">{{ item.account.last_name }}</div>
+        <div class="col-md-2">{{ item.account.first_name }}</div>
+        <div class="col-md-2">{{ item.account.middle_name }}</div>
+        <div class="col-md-1">{{ item.account.subject_of_country }}</div>
+        <div class="col-md-2">{{ item.account.municipality }}</div>
+        <div class="col-md-2">
+          {{ form.id }}
+          {{ form.status|attr:"class:form-select" }}
+        </div>
+      </div>
+    </div>
+
+    {% empty %}
+    <p>Заявок нет</p>
+    {% endfor %}
+  </form>
+
+</div>
+{% endblock %}

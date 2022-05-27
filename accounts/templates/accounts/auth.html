@@ -1,0 +1,42 @@
+{% extends 'core/layout.html' %}
+{% load widget_tweaks %}
+{% load static %}
+
+{% block title %}Авторизация{% endblock %}
+{% block content %}
+<div class="container">
+<div class="auth-wrapper">
+    <img class="mb-4" src="{% static 'core/img/logo.png' %}" alt="logo">
+    <h5 class="mb-4 text-center">Вход в личный кабинет</h5>
+    {% if form.non_field_errors %}
+        <div class="alert alert-danger">
+            {{ form.non_field_errors }}
+        </div>
+    {% endif %}
+
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-success"> 
+        {{ message }} 
+    </div>
+    {% endfor %}
+    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="login">E-mail</label>
+            {{ form.username|attr:"class:form-control"|attr:"required"|attr:"value" }}
+        </div>
+        <div class="form-group">
+            <label for="password">Пароль</label>
+            {{ form.password|attr:"class:form-control" }}
+        </div>
+        <button class="mb-4 btn btn-primary btn-block btn-lg" type="submit">Войти</button>
+    </form>
+    <p class="auth-text">Еще нет личного кабинета? <a href="{% url 'reg' %}">Зарегистрируйтесь</a></p>
+    <p class="auth-text">Забыли пароль? <a href="{% url 'password_reset' %}">Восстановите</a></p>
+    <p class="auth-text">Возникли вопросы? <a href="mailto:online@iom48.ru">online@iom48.ru</a></p>
+</div>
+</div>
+
+{% endblock %}

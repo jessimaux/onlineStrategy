@@ -1,0 +1,38 @@
+{% extends 'core/page-layout.html' %}
+{% load widget_tweaks %}
+{% load static %}
+{% block title %}Изменение курса{% endblock %}
+{% block page %}
+<div class="container">
+    <div class="account-header">
+        <div class="row">
+            <div class="mb-3 col-lg-4 offset-lg-4">
+                <h2 class="my-3">Изменить курс</h2>
+                <a href="{{ course.description }}">{{ course.title }}</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-4 offset-lg-4">
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+            <form method="post">
+                {% csrf_token %}
+
+                {% for field in form %}
+                <div class="form-group form-group-required">
+                    <label>{{ field.label_tag }}</label>
+                    {{ field|attr:"class:form-control"|attr:"required" }}
+                    {% for error in field.errors %}
+                    <p class="my-2 alert alert-danger">{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+
+                <button class="mb-4 btn btn-primary btn-block btn-lg" type="submit">Сохранить</button>
+            </form>
+            {% endblock %}

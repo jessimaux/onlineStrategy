@@ -1,0 +1,70 @@
+{% extends 'core/page-layout.html' %}
+{% load widget_tweaks %}
+{% load static %}
+{% block title %}Курсы{% endblock %}
+{% block page %}
+<div class="container">
+  <h2 class="my-3">Модерация</h2>
+
+  <nav class="nav nav-pills flex-column flex-sm-row">
+    <a class="text-sm-center nav-link active" aria-current="page" href="{% url 'moderate-courses' %}">Курсы</a>
+    <a class="text-sm-center nav-link" href="{% url 'moderate-profiles' %}">Аккаунты</a>
+    <a class="text-sm-center nav-link" href="#">Статистика</a>
+    <a class="text-sm-center nav-link" href="#">Отчеты</a>
+  </nav>
+
+  <div class="my-3 course-app">
+    <div class="row">
+      <div class="col-md-8 col-6">
+        <a href="{% url 'course-create' %}" class="btn btn-primary text-white"><i class="fas fa-plus"></i> Создать</a>
+      </div>
+
+      <div class="col-md-4 col-6">
+        <form class="float-end" method='GET'>
+          <input class="form-control"  placeholder="Поиск" type='text' name='q' value='{{ request.GET.q }}'>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="sign-table d-none d-sm-block d-block d-sm-none d-md-block">
+    <div class="row sign-row">
+      <div class="col-md-4">Программа / мероприятие</div>
+      <div class="col-md-3">Тип мероприятия</div>
+      <div class="col-md-3">Сроки проведения</div>
+      <div class="col-md-2">Операции</div>
+    </div>
+  </div>
+
+  {% for item in object_list %}
+  <div class="sign-table__item">
+    <div class="row">
+      <div class="col-md-4">
+        <a href="{% url 'course' item.id %}">{{ item.title }}</a>
+      </div>
+      <div class="col-md-3">{{ item.get_type_display }}</div>
+      <div class="col-md-3">{{ item.date_start|date:"d.m.Y" }} - {{ item.date_end|date:"d.m.Y" }}</div>
+      <div class="col-md-2 text-end">
+        <a href="{% url 'course-view' item.id %}" class="btn btn-primary text-white"><i class="fas fa-users"></i></a>
+        <a href="{% url 'course-update' item.id %}" class="btn btn-primary text-white"><i class="far fa-edit"></i></a>
+        <form action="{% url 'course-delete' pk=item.id %}" method="POST" style="display: inline;" onsubmit="window.mytest()">
+          {% csrf_token %}
+          <button type="submit" value="Delete" class="btn btn-primary"><i class="far fa-trash-alt"></i></button>
+        </form>
+        <script type="text/javascript">window.mytest = function() { var isValid = confirm('Вы уверены, что хотите удалить данную программу?');if (!isValid) { event.preventDefault();}}</script>
+
+        
+
+      </div>
+    </div>
+  </div>
+
+  {% empty %}
+  <p>Курсов нет</p>
+  {% endfor %}
+
+ {% include 'core/pagination.html' %}
+
+</div>
+{% endblock %}
