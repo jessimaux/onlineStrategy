@@ -11,4 +11,5 @@ urlpatterns = [
     path('route/profile', views.RouteProfileView.as_view(), name='route-profile'),
     path('route/diagnostics', views.DiagnosticListView.as_view(), name='route-diagnostics'),
     path('route/diagnostics/<int:pk>', views.DiagnosticDetailView.as_view(), name='route-diagnostics-item'),
+    path('route/diagnostics/result/<int:pk>', views.DiagnosticResultView.as_view(), name='route-diagnostics-result'),
 ]

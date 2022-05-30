@@ -1,0 +1,19 @@
+{% extends 'core/page-layout.html' %}
+{% load widget_tweaks %}
+{% load static %}
+{% block title %}Курсы{% endblock %}
+{% block page %}
+<div class="container">
+  <h2 class="my-3">Образовательный маршрут</h2>
+
+  <nav class="mb-3 nav nav-pills flex-column flex-sm-row">
+    <a class="text-sm-center nav-link" href="{% url 'route-profile' %}">Профиль</a>
+    <a class="text-sm-center nav-link active" href="{% url 'route-diagnostics' %}">Диагностика</a>
+    <a class="text-sm-center nav-link" href="#">Индивидуальный план</a>
+    <a class="text-sm-center nav-link" href="#">Материалы</a>
+  </nav>
+
+    {{ result }}
+
+</div>
+{% endblock %}

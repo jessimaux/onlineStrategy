@@ -116,6 +116,9 @@ class Account(AbstractBaseUser):
     document_code_department = models.CharField(max_length=7, blank=True)
     document_place_birth = models.CharField(max_length=32, blank=True)
 
+    # Avatar
+    image = models.ImageField(upload_to='images', default='images/default.png')
+
     # Technical field
     is_active = models.BooleanField(default=False)
     moderator = models.BooleanField(default=False)

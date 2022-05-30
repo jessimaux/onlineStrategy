@@ -1,6 +1,7 @@
 from django import forms
 from django.forms import modelformset_factory, BaseModelFormSet
 from .models import Answer, Question
+from accounts.models import Account
 
 
 class BaseQuestionFormSet(BaseModelFormSet):
@@ -14,7 +15,7 @@ class BaseQuestionFormSet(BaseModelFormSet):
 
 
 class AnswerForm(forms.ModelForm):
-    answers = forms.ModelChoiceField(widget=forms.RadioSelect, queryset=Answer.objects.all())
+    answers = forms.ModelChoiceField(label=False, widget=forms.RadioSelect, queryset=Answer.objects.all())
     title = forms.CharField(widget=forms.HiddenInput())
 
     class Meta:
@@ -27,4 +28,11 @@ class AnswerForm(forms.ModelForm):
         if question_id:
             self.fields['answers'].queryset = Answer.objects.filter(question_id=question_id)
 
-QuestionFormSet = modelformset_factory(Answer, AnswerForm, formset=BaseQuestionFormSet, extra=0)
+QuestionFormSet = modelformset_factory(Question, AnswerForm, formset=BaseQuestionFormSet, extra=0)
+
+
+class ImageForm(forms.ModelForm):
+    """Form for the image model"""
+    class Meta:
+        model = Account
+        fields = ('image',)

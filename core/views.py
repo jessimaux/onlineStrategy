@@ -13,7 +13,9 @@ from .models import Question, Answer, Diagnostic, DiagnosticResult
 
 from django.db.models import Q
 
-from .forms import QuestionFormSet, AnswerForm
+from .forms import QuestionFormSet, AnswerForm, ImageForm
+
+from django.urls import reverse_lazy
 
 
 class IndexView(LoginRequiredMixin, ListView):
@@ -22,11 +24,36 @@ class IndexView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return AccountCourse.objects.filter(account_id=self.request.user.id)
+
+        """Another realization"""
         #return Course.objects.filter(accountcourse__account_id=self.request.user.id)
 
 
 class RouteProfileView(LoginRequiredMixin, TemplateView):
     template_name = 'core/route-profile.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(RouteProfileView, self).get_context_data()
+
+        total_mark1, total_mark2, total_mark3, total_mark4 = 0, 0, 0, 0
+        diagnostics_results = DiagnosticResult.objects.filter(account_id=self.request.user.id)
+        for res in diagnostics_results:
+            total_mark1 += res.mark1
+            total_mark2 += res.mark2
+            total_mark3 += res.mark3
+            total_mark4 += res.mark4
+
+        context['result'] = [total_mark1, total_mark2, total_mark3, total_mark4]
+        context['form'] = ImageForm()
+        context['img_obj'] = Account.objects.get(id=self.request.user.id).image.url
+        return context
+
+    def post(self, request, *args, **kwargs):
+        obj = Account.objects.get(id=self.request.user.id)
+        form = ImageForm(request.POST, request.FILES, instance=obj)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect('/route/profile')
 
 
 class DiagnosticListView(LoginRequiredMixin, ListView):
@@ -53,14 +80,25 @@ class DiagnosticDetailView(LoginRequiredMixin, TemplateView):
             return self.form_valid(formset)
 
     def form_valid(self, formset):
-        mark = 0
+        mark1, mark2, mark3, mark4 = 0, 0, 0, 0
         for form in formset:
             form_obj = form.save(commit=False)
-            if form_obj.correct:
-                mark += 1
+            if form.is_valid():
+                if form.cleaned_data['answers'].correct:
+                    if form_obj.mark1:
+                        mark1 += 1
+                    if form_obj.mark2:
+                        mark2 += 1
+                    if form_obj.mark3:
+                        mark3 += 1
+                    if form_obj.mark4:
+                        mark4 += 1
         DiagnosticResult.objects.get_or_create(diagnostic=Diagnostic(id=self.kwargs['pk']),
                                                account=Account(id=self.request.user.pk),
-                                               mark=mark)
+                                               mark1=mark1,
+                                               mark2=mark2,
+                                               mark3=mark3,
+                                               mark4=mark4)
         return HttpResponseRedirect('/courses')
 
     def get(self, request, *args, **kwargs):
@@ -70,10 +108,10 @@ class DiagnosticDetailView(LoginRequiredMixin, TemplateView):
         except DiagnosticResult.DoesNotExist:
             obj = None
         if obj:
-            return redirect('route-profile')
+            return HttpResponseRedirect(reverse_lazy('route-diagnostics-result', args=[self.kwargs['pk']]))
+            #return redirect('route-diagnostics-result')
         else:
             return super(DiagnosticDetailView, self).get(request, *args, **kwargs)
-
 
 # old version wo using form
 '''
@@ -88,6 +126,21 @@ class DiagnosticDetailView(LoginRequiredMixin, TemplateView):
                 print('ok')
         return self.get(request, *arg, **kwargs)
 '''
+
+
+class DiagnosticResultView(LoginRequiredMixin, TemplateView):
+    template_name = 'core/route-diagnostics-result.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(DiagnosticResultView, self).get_context_data()
+        diagnostics_results = DiagnosticResult.objects.get(account_id=self.request.user.id,
+                                                              diagnostic_id=self.kwargs['pk'])
+        context['result'] = [diagnostics_results.mark1,
+                             diagnostics_results.mark2,
+                             diagnostics_results.mark3,
+                             diagnostics_results.mark4]
+        return context
+
 
 
 class ModerateProfilesListView(LoginRequiredMixin, ModeratorPermissionsMixin, ListView):

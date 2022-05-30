@@ -13,7 +13,8 @@
     <a class="text-sm-center nav-link" href="#">Материалы</a>
   </nav>
 
-<form method="post">{% csrf_token %}
+<form method="post">
+  {% csrf_token %}
   {{ formset.management_form }}
   {% for form in formset %}
     {% if form.non_field_errors %}
@@ -22,8 +23,8 @@
         </div>
     {% endif %}
 
+    {{ form.title.value }} 
     {{ form }} <br>
-
   {% endfor %}
   <button class="mb-4 btn btn-primary btn-block btn-lg" type="submit">Сохранить</button>
 </form>
