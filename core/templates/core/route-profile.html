@@ -13,51 +13,57 @@
     <a class="text-sm-center nav-link" href="#">Материалы</a>
   </nav>
 
-  <div class="row justify-content-between">
-    <div class="col-lg-3 bg-white rounded shadow-sm p-3 mt-3">
+  <div class="row bg-white rounded shadow-sm p-3 mt-3">
+    <div class="col-lg-3 p-3">
       <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Upload</button>
+        <div class="profile-image-wrap">
+          <img src="{{ account.image.url }}" class="profile-image">
+          <div class="position-absolute top-50 start-25 profile-image-upload">
+            {{ form.image|attr:"class:form-control" }}
+            <button type="submit" class="btn btn-primary btn-block btn-sm my-1">Загрузить</button>
+          </div>
+        </div>
       </form>
-      <img src="{{ img_obj}}">
     </div>
 
-    <div class="col-lg-8 bg-white rounded shadow-sm p-3 mt-3">
-      <p>Злобин Максим Сергеевич<br>
-        Ваш методист<br>
-        Кузнецова Марина Кузьминична<br>
-        cnppm.lipetsk@yandex.ru<br>
-        vk / telegram<br>
-        Связаться<br>
-        Пригласить на урок<br>
-      </p>
-    </div>
-
-    <div class="col-lg-12 bg-white rounded shadow-sm p-3 mt-3">
-      <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-      <script type="text/javascript">
-        google.charts.load("current", {packages:["corechart"]});
-        google.charts.setOnLoadCallback(drawChart);
-        function drawChart() {
-          var data = google.visualization.arrayToDataTable([
-            ['Шкала', 'Результат'],
-            ['Шкала 1', {{ result.0 }}],
-            ['Шкала 2', {{ result.1 }}],
-            ['Шкала 3', {{ result.2 }}],
-            ['Шкала 4', {{ result.3 }}]
-            ]);
-
-          var options = {
-            pieHole: 0.4,
-          };
-
-          var chart = new google.visualization.PieChart(document.getElementById('donutchart'));
-          chart.draw(data, options);
-        }
-      </script>
-      <div id="donutchart" style="width: 900px; height: 500px;"></div>
-    </div>
-
+    <div class="col-lg-3 p-3">
+      {{ account.last_name }} {{ account.first_name }} {{ account.middle_name }} <br>
+      Ваш методист<br>
+      {{ method.methodist.last_name }} {{ method.methodist.first_name }} {{ method.methodist.middle_name }}<br>
+      {{ method.methodist.mail }}<br>
+      <a href="{% url 'method-signs-create' %}">Пригласить на урок</a><br>
   </div>
-  {% endblock %}
+
+    <div class="col-lg-6">
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load("current", {packages:["corechart"]});
+      google.charts.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['Шкала', 'Результат'],
+          ['Шкала 1', {{ result.0 }}],
+          ['Шкала 2', {{ result.1 }}],
+          ['Шкала 3', {{ result.2 }}],
+          ['Шкала 4', {{ result.3 }}]
+          ]);
+
+        var options = {
+          pieHole: 0.4,
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('donutchart'));
+        chart.draw(data, options);
+      }
+    </script>
+    <div id="donutchart"></div>
+  </div>
+</div>
+
+<div class="row">
+
+</div>
+
+</div>
+{% endblock %}

@@ -117,10 +117,12 @@ class Account(AbstractBaseUser):
     document_place_birth = models.CharField(max_length=32, blank=True)
 
     # Avatar
+    # TODO: change folder name to profiles_pic or smth
     image = models.ImageField(upload_to='images', default='images/default.png')
 
     # Technical field
     is_active = models.BooleanField(default=False)
+    methodist = models.BooleanField(default=False)
     moderator = models.BooleanField(default=False)
     staff = models.BooleanField(default=False)
     superuser = models.BooleanField(default=False)

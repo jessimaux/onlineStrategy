@@ -2,14 +2,14 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from onlineStrategy.permissions import ModeratorPermissionsMixin
+from onlineStrategy.permissions import ModeratorPermissionsMixin, MethodistPermissionsMixin
 
-from django.views.generic import ListView, TemplateView, FormView
+from django.views.generic import ListView, TemplateView, UpdateView, CreateView
 from django.http import HttpResponseRedirect
 
 from courses.models import Course, AccountCourse
 from accounts.models import Account
-from .models import Question, Answer, Diagnostic, DiagnosticResult
+from .models import Question, Diagnostic, DiagnosticResult, Methodist2Teacher, MethodistLessonSigns
 
 from django.db.models import Q
 
@@ -24,9 +24,6 @@ class IndexView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return AccountCourse.objects.filter(account_id=self.request.user.id)
-
-        """Another realization"""
-        #return Course.objects.filter(accountcourse__account_id=self.request.user.id)
 
 
 class RouteProfileView(LoginRequiredMixin, TemplateView):
@@ -45,7 +42,11 @@ class RouteProfileView(LoginRequiredMixin, TemplateView):
 
         context['result'] = [total_mark1, total_mark2, total_mark3, total_mark4]
         context['form'] = ImageForm()
-        context['img_obj'] = Account.objects.get(id=self.request.user.id).image.url
+        context['account'] = Account.objects.get(id=self.request.user.id)
+        try:
+            context['method'] = Methodist2Teacher.objects.get(teacher_id=self.request.user.id)
+        except Methodist2Teacher.DoesNotExist:
+            context['method'] = None
         return context
 
     def post(self, request, *args, **kwargs):
@@ -142,7 +143,6 @@ class DiagnosticResultView(LoginRequiredMixin, TemplateView):
         return context
 
 
-
 class ModerateProfilesListView(LoginRequiredMixin, ModeratorPermissionsMixin, ListView):
     template_name = 'core/moderate-profiles.html'
     context_object_name = 'object_list'
@@ -195,3 +195,65 @@ class ModerateAccountView(LoginRequiredMixin, ModeratorPermissionsMixin, Templat
                                                                                  'subject_of_country')[0]
         context['signs'] = AccountCourse.objects.filter(account_id=self.kwargs['pk'])
         return context
+
+
+class MethodProfilesListView(LoginRequiredMixin, MethodistPermissionsMixin, ListView):
+    template_name = 'core/method-profiles.html'
+    context_object_name = 'object_list'
+    model = Methodist2Teacher
+    paginate_by = 50
+
+    def get_queryset(self):
+        object_list = Methodist2Teacher.objects.filter(methodist_id=self.request.user.id)
+        query = self.request.GET.get('q')
+        if query:
+            object_list = self.model.objects.filter(Q(teacher__first_name__icontains=query) |
+                                                    Q(teacher__last_name__icontains=query) |
+                                                    Q(teacher__middle_name__icontains=query) |
+                                                    Q(teacher__subject_of_country__icontains=query) |
+                                                    Q(teacher__municipality__icontains=query) |
+                                                    Q(teacher__work__icontains=query)
+                                                    )
+        return object_list
+
+
+class MethodSignsListView(LoginRequiredMixin, MethodistPermissionsMixin, ListView):
+    template_name = 'core/method-signs.html'
+    context_object_name = 'object_list'
+    model = MethodistLessonSigns
+    paginate_by = 25
+
+    def get_queryset(self):
+        method_obj = Methodist2Teacher.objects.filter(methodist_id=self.request.user.id)
+        object_list = MethodistLessonSigns.objects.filter(teacher_id__in=method_obj.values('teacher_id'))
+
+        query = self.request.GET.get('q')
+        if query:
+            object_list = self.model.objects.filter(Q(id__icontains=query) |
+                                                    Q(teacher__first_name__icontains=query) |
+                                                    Q(teacher__last_name__icontains=query) |
+                                                    Q(teacher__middle_name__icontains=query) |
+                                                    Q(teacher__work__icontains=query) |
+                                                    Q(date__icontains=query)
+                                                    )
+
+        return object_list
+
+
+class MethodSignsDetailView(LoginRequiredMixin, MethodistPermissionsMixin, UpdateView):
+    model = MethodistLessonSigns
+    fields = ['lesson_title', 'lesson_description', 'lesson_plan', 'status', 'methodist_comment']
+    template_name = 'core/method-signs-update.html'
+    success_url = reverse_lazy('method-signs')
+
+
+class MethodSignsCreateView(LoginRequiredMixin, CreateView):
+    model = MethodistLessonSigns
+    fields = ['lesson_title', 'lesson_description', 'lesson_plan', 'date']
+    template_name = 'core/method-signs-up.html'
+    success_url = reverse_lazy('index')
+
+    def form_valid(self, form):
+        form.instance.teacher_id = self.request.user.id
+        form.save()
+        return super().form_valid(form)

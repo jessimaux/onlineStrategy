@@ -3,6 +3,7 @@ from accounts.models import Account
 
 from django.urls import reverse_lazy
 
+# TODO: ITS REALLY NEED TO BE HERE? OR IN CLASS?
 STATUS_CHOICES = (
     ('ОТКЛ', 'Отклонено'),
     ('СМОТР', 'На рассмотрении'),

@@ -1,0 +1,52 @@
+{% extends 'core/page-layout.html' %}
+{% load widget_tweaks %}
+{% load static %}
+{% block title %}Наставничество{% endblock %}
+{% block page %}
+<div class="container">
+  <h2 class="my-3">Наставничество</h2>
+
+  <nav class="nav nav-pills flex-column flex-sm-row">
+    <a class="text-sm-center nav-link" aria-current="page" href="{% url 'method-profiles' %}">Список учителей</a>
+    <a class="text-sm-center nav-link active" href="{% url 'method-signs' %}">Заявки</a>
+  </nav>
+
+  <div class="account-header">
+    <div class="row">
+      <div class="my-3 col-lg-4 offset-lg-4 text-center">
+        <h3>Заявка</h3>
+        <p>№ {{ object.id}}</p>
+        <p>Статус: {{ object.get_status_display }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-4 offset-lg-4 p-3">
+      <form method="post">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+        <div class="alert alert-danger">
+          {{ form.non_field_errors }}
+        </div>
+        {% endif %}
+
+        {% for field in form %}
+        <div class="form-group form-group-required">
+          <label>{{ field.label_tag }}</label>
+          {{ field|attr:"class:form-control"|attr:"required" }}
+          {% for error in field.errors %}
+          <p class="my-2 alert alert-danger">{{ error }}</p>
+          {% endfor %}
+        </div>
+        {% endfor %}
+
+        <button class="mb-4 btn btn-primary btn-block btn-lg" type="submit">Сохранить</button>
+      </form>
+    </div>
+  </div>
+
+</form>
+
+</div>
+{% endblock %}

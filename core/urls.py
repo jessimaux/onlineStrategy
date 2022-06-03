@@ -12,4 +12,8 @@ urlpatterns = [
     path('route/diagnostics', views.DiagnosticListView.as_view(), name='route-diagnostics'),
     path('route/diagnostics/<int:pk>', views.DiagnosticDetailView.as_view(), name='route-diagnostics-item'),
     path('route/diagnostics/result/<int:pk>', views.DiagnosticResultView.as_view(), name='route-diagnostics-result'),
+    path('method/profiles', views.MethodProfilesListView.as_view(), name='method-profiles'),
+    path('method/signs', views.MethodSignsListView.as_view(), name='method-signs'),
+    path('method/signs/<int:pk>', views.MethodSignsDetailView.as_view(), name='method-signs-item'),
+    path('method/signs/create', views.MethodSignsCreateView.as_view(), name='method-signs-create'),
 ]
