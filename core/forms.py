@@ -36,3 +36,7 @@ class ImageForm(forms.ModelForm):
     class Meta:
         model = Account
         fields = ('image',)
+
+
+class OrderingForm(forms.Form):
+    ordering = forms.CharField()

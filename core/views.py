@@ -4,18 +4,20 @@ from django.http import HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from onlineStrategy.permissions import ModeratorPermissionsMixin, MethodistPermissionsMixin
 
-from django.views.generic import ListView, TemplateView, UpdateView, CreateView
+from django.views.generic import ListView, TemplateView, UpdateView, CreateView, DeleteView
 from django.http import HttpResponseRedirect
 
 from courses.models import Course, AccountCourse
 from accounts.models import Account
-from .models import Question, Diagnostic, DiagnosticResult, Methodist2Teacher, MethodistLessonSigns
+from .models import Question, Diagnostic, DiagnosticResult, Methodist2Teacher, MethodistLessonSigns, RouteManual, Route
 
 from django.db.models import Q
 
-from .forms import QuestionFormSet, AnswerForm, ImageForm
+from .forms import QuestionFormSet, ImageForm, OrderingForm
 
 from django.urls import reverse_lazy
+from django.contrib import messages
+from .tools import negative_number_is_zero
 
 
 class IndexView(LoginRequiredMixin, ListView):
@@ -55,6 +57,85 @@ class RouteProfileView(LoginRequiredMixin, TemplateView):
         if form.is_valid():
             form.save()
             return HttpResponseRedirect('/route/profile')
+
+
+class RouteManualsListView(LoginRequiredMixin, ListView):
+    template_name = 'core/route-manuals.html'
+    context_object_name = 'object_list'
+    model = RouteManual
+    paginate_by = 25
+
+    def get_queryset(self):
+        query = self.request.GET.get('q')
+        if query:
+            object_list = self.model.objects.filter(Q(title__icontains=query) |
+                                                    Q(author__icontains=query))
+            return object_list
+        else:
+            return super().get_queryset()
+
+
+def add2route_manual(request, *args, **kwargs):
+    if request.user.is_authenticated:
+        try:
+            obj = Route.objects.get(account=Account(id=request.user.pk),
+                                    manual=RouteManual(id=kwargs['pk']))
+            messages.success(request, 'Материал уже добавлен в ваш образовательный маршрут')
+        except Route.DoesNotExist:
+            Route(account=Account(id=request.user.pk),
+                  manual=RouteManual(id=kwargs['pk'])).save()
+            messages.success(request, 'Материал добавлен в ваш образовательный маршрут')
+        return HttpResponseRedirect('/route')
+
+
+class RouteView(LoginRequiredMixin, TemplateView):
+    template_name = 'core/route.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super(RouteView, self).get_context_data()
+        context['route'] = Route.objects.filter(account_id=self.request.user.id).order_by('order')
+
+        """ selection manuals """
+        # TODO: random queryset w max pos 50
+        profile = DiagnosticResult.objects.get(account_id=self.request.user.id)
+        using_manuals = Route.objects.filter(account_id=self.request.user.id)
+        manuals = RouteManual.objects.exclude(id__in=using_manuals.values('manual_id'))
+        context['recommendation'] = list()
+
+        for manual in manuals:
+            dist = (negative_number_is_zero(manual.mark1 - profile.mark1)**2 +
+                    negative_number_is_zero(manual.mark2 - profile.mark2)**2 +
+                    negative_number_is_zero(manual.mark3 - profile.mark3)**2 +
+                    negative_number_is_zero(manual.mark4 - profile.mark4) ** 2) ** (1/2)
+            if dist >= 5:
+                context['recommendation'].append(manual)
+
+        return context
+
+    def post(self, request, *args, **kwargs):
+        form = OrderingForm(request.POST)
+        if form.is_valid():
+            ordered_ids = form.cleaned_data["ordering"].split('&')
+            print(ordered_ids)
+            c_order = 1
+            for id in ordered_ids:
+                manual = Route.objects.get(account_id=self.request.user.id, manual_id=id)
+                manual.order = c_order
+                manual.save()
+                c_order += 1
+        return HttpResponseRedirect('/route')
+
+
+class RouteDeleteView(LoginRequiredMixin, DeleteView):
+    model = Route
+    success_url = reverse_lazy('route')
+
+
+class RouteUpdateView(LoginRequiredMixin, UpdateView):
+    template_name = 'core/route-item.html'
+    model = Route
+    fields = ['status', 'reflection']
+    success_url = '/route'
 
 
 class DiagnosticListView(LoginRequiredMixin, ListView):
@@ -197,6 +278,39 @@ class ModerateAccountView(LoginRequiredMixin, ModeratorPermissionsMixin, Templat
         return context
 
 
+class ModerateManualsListView(LoginRequiredMixin, ModeratorPermissionsMixin, ListView):
+    template_name = 'core/moderate-manuals.html'
+    context_object_name = 'object_list'
+    model = RouteManual
+    paginate_by = 25
+
+    def get_queryset(self):
+        query = self.request.GET.get('q')
+        if query:
+            object_list = self.model.objects.filter(Q(title__icontains=query) |
+                                                    Q(author__icontains=query))
+            return object_list
+        else:
+            return super().get_queryset()
+
+
+class ModerateManualsCreateView(LoginRequiredMixin, ModeratorPermissionsMixin, CreateView):
+    model = RouteManual
+    fields = '__all__'
+    template_name = 'core/moderate-manuals-create.html'
+
+
+class ModerateManualsUpdateView(LoginRequiredMixin, ModeratorPermissionsMixin, UpdateView):
+    model = RouteManual
+    template_name = 'core/moderate-manuals-update.html'
+    fields = '__all__'
+
+
+class ModerateManualsDeleteView(LoginRequiredMixin, ModeratorPermissionsMixin, DeleteView):
+    model = RouteManual
+    success_url = reverse_lazy('moderate-manuals')
+
+
 class MethodProfilesListView(LoginRequiredMixin, MethodistPermissionsMixin, ListView):
     template_name = 'core/method-profiles.html'
     context_object_name = 'object_list'
@@ -257,3 +371,5 @@ class MethodSignsCreateView(LoginRequiredMixin, CreateView):
         form.instance.teacher_id = self.request.user.id
         form.save()
         return super().form_valid(form)
+
+

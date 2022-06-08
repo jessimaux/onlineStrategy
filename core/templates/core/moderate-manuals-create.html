@@ -1,23 +1,23 @@
 {% extends 'core/page-layout.html' %}
 {% load widget_tweaks %}
 {% load static %}
-{% block title %}Наставничество{% endblock %}
+{% block title %}Создание мероприятия{% endblock %}
 {% block page %}
 <div class="container">
 
   <div class="account-header">
     <div class="row">
       <div class="my-3 col-lg-4 offset-lg-4 text-center">
-        <h3>Заявка на открытый урок</h3>
+        <h3>Добавление нового материала</h3>
       </div>
     </div>
   </div>
 
   <div class="row">
     <div class="col-lg-4 offset-lg-4 p-3">
-      <form method="post" enctype="multipart/form-data">
+    <form method="post">
         {% csrf_token %}
-        {% if form.non_field_errors %}
+         {% if form.non_field_errors %}
         <div class="alert alert-danger">
           {{ form.non_field_errors }}
         </div>
@@ -35,8 +35,5 @@
 
         <button class="mb-4 btn btn-primary btn-block btn-lg" type="submit">Сохранить</button>
       </form>
-    </div>
-  </div>
-
 </div>
 {% endblock %}

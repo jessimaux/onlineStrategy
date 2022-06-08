@@ -1,23 +1,31 @@
 {% extends 'core/page-layout.html' %}
 {% load widget_tweaks %}
 {% load static %}
-{% block title %}Наставничество{% endblock %}
+{% block title %}Курсы{% endblock %}
 {% block page %}
 <div class="container">
+  <h2 class="my-3">Образовательный маршрут</h2>
 
-  <div class="account-header">
+  <nav class="mb-3 nav nav-pills flex-column flex-sm-row">
+    <a class="text-sm-center nav-link" href="{% url 'route-profile' %}">Профиль</a>
+    <a class="text-sm-center nav-link" href="{% url 'route-diagnostics' %}">Диагностика</a>
+    <a class="text-sm-center nav-link active" href="{% url 'route' %}">Индивидуальный план</a>
+    <a class="text-sm-center nav-link" href="{% url 'route-manuals' %}">Материалы</a>
+</nav>
+
+<div class="account-header">
     <div class="row">
       <div class="my-3 col-lg-4 offset-lg-4 text-center">
-        <h3>Заявка на открытый урок</h3>
+        <h3>Редактирование материала</h3>
       </div>
     </div>
   </div>
 
   <div class="row">
     <div class="col-lg-4 offset-lg-4 p-3">
-      <form method="post" enctype="multipart/form-data">
+    <form method="post">
         {% csrf_token %}
-        {% if form.non_field_errors %}
+         {% if form.non_field_errors %}
         <div class="alert alert-danger">
           {{ form.non_field_errors }}
         </div>
@@ -35,8 +43,8 @@
 
         <button class="mb-4 btn btn-primary btn-block btn-lg" type="submit">Сохранить</button>
       </form>
-    </div>
-  </div>
 
+</div>
+  </div>
 </div>
 {% endblock %}

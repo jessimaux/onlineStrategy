@@ -78,6 +78,7 @@ class CourseUpdateView(LoginRequiredMixin, ModeratorPermissionsMixin, UpdateView
     model = Course
     template_name = 'courses/course_update.html'
     fields = '__all__'
+    success_url = '/course'
 
 
 class CourseView(LoginRequiredMixin, ModeratorPermissionsMixin, TemplateView):

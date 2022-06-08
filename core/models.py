@@ -55,3 +55,32 @@ class MethodistLessonSigns(models.Model):
         ('ПРОВ', 'Проведено')
     )
     status = models.CharField(max_length=32, choices=STATUS_CHOICES, default='СМОТР')
+
+
+class RouteManual(models.Model):
+    title = models.CharField(max_length=256, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    TYPE_CHOICES = (
+        ('КПК', 'Курс повышения квалификации'),
+        ('СЕМ', 'Семинар'),
+        ('МЕТ', 'Методичка')
+    )
+    type = models.CharField(max_length=32, choices=TYPE_CHOICES, default='КПК')
+    link = models.CharField(max_length=512, blank=True, null=True)
+    mark1 = models.IntegerField(blank=True, null=True)
+    mark2 = models.IntegerField(blank=True, null=True)
+    mark3 = models.IntegerField(blank=True, null=True)
+    mark4 = models.IntegerField(blank=True, null=True)
+
+
+class Route(models.Model):
+    account = models.ForeignKey(Account, on_delete=models.DO_NOTHING)
+    manual = models.ForeignKey(RouteManual, on_delete=models.DO_NOTHING)
+    STATUS_CHOICES = (
+        ('АКТИВ', 'В процессе'),
+        ('ЗАКР', 'Завершен'),
+        ('ПЛАН', 'Запланирован')
+    )
+    status = models.CharField(max_length=32, choices=STATUS_CHOICES, default='ПЛАН')
+    reflection = models.TextField(blank=True, null=True)
+    order = models.IntegerField(default=1000)

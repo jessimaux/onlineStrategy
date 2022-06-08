@@ -1,0 +1,119 @@
+{% extends 'core/page-layout.html' %}
+{% load widget_tweaks %}
+{% load static %}
+{% block title %}Курсы{% endblock %}
+{% block page %}
+<div class="container">
+  <h2 class="my-3">Образовательный маршрут</h2>
+
+  <nav class="mb-3 nav nav-pills flex-column flex-sm-row">
+    <a class="text-sm-center nav-link" href="{% url 'route-profile' %}">Профиль</a>
+    <a class="text-sm-center nav-link" href="{% url 'route-diagnostics' %}">Диагностика</a>
+    <a class="text-sm-center nav-link active" href="{% url 'route' %}">Индивидуальный план</a>
+    <a class="text-sm-center nav-link" href="{% url 'route-manuals' %}">Материалы</a>
+</nav>
+
+{% if messages %}
+{% for message in messages %}
+<div class={{ message.tags }}>{{ message }}</div>
+{% endfor %}
+{% endif %}
+
+<div class="my-3 course-app">
+    <div class="row">
+      <div class="col-md-8 col-6">
+        <a href="{% url 'route-manuals' %}" class="btn btn-primary text-white"><i class="fas fa-plus"></i> Добавить материал</a>
+    </div>
+</div>
+
+<div class="sign-table d-none d-sm-block d-block d-sm-none d-md-block mt-3">
+    <div class="row sign-row">
+      <div class="col-md-2">Наименование</div>
+      <div class="col-md-2">Тип</div>
+      <div class="col-md-2">Описание</div>
+      <div class="col-md-2">Статус</div>
+      <div class="col-md-2">Доступность</div>
+      <div class="col-md-2">Операции</div>
+  </div>
+</div>
+
+
+<div id="sortable">
+    {% for item in route %}
+    <div class="sign-table__item" id="item_{{ item.manual.id }}">
+        <div class="row">
+            <div class="col-md-2"><i class="fa-solid fa-grip-vertical handle"></i> {{ item.manual.title }}</div>
+            <div class="col-md-2">{{ item.manual.get_type_display }}</div>
+            <div class="col-md-2">{{ item.manual.description }}</div>
+            <div class="col-md-2">{{ item.get_status_display }}</div>
+            <div class="col-md-2">{{ item.manual.link }}</div>
+            <div class="col-md-2 text-end">
+               <a href="{% url 'route-update' item.id %}" class="btn btn-primary text-white"><i class="far fa-edit"></i></a>
+               <form action="{% url 'route-delete' pk=item.id %}" method="POST" style="display: inline;" onsubmit="window.mytest()">
+                  {% csrf_token %}
+                  <button type="submit" value="Delete" class="btn btn-primary"><i class="far fa-trash-alt"></i></button>
+              </form>
+              <script type="text/javascript">window.mytest = function() { var isValid = confirm('Вы уверены, что хотите удалить данный материал?');if (!isValid) { event.preventDefault();}}</script>
+          </div>
+      </div>
+  </div>
+  {% endfor %}
+</div>
+
+<form id="orderingForm" method="post">
+    {% csrf_token %}
+    <input type="hidden" id="orderingInput" name="ordering">
+    <div class="offset-lg-10 lg-2">
+        <button id="saveOrdering" class="mb-4 btn btn-primary btn-block btn-lg mt-3" type="submit">Сохранить</button>
+    </div>
+</form>
+
+<script>
+    $( function() {
+        $( "#sortable" ).sortable({
+            handle: ".handle"
+        });
+
+        $('#saveOrdering').click(function(){
+            $('#orderingInput').val($("#sortable").sortable('serialize').replaceAll('item[]=',''));
+        });
+    });
+</script>
+
+
+
+<h2 class="my-3">Вам возможно подойдут</h2>
+
+<div class="sign-table d-none d-sm-block d-block d-sm-none d-md-block">
+    <div class="row sign-row">
+      <div class="col-md-2">Наименование</div>
+      <div class="col-md-2">Тип</div>
+      <div class="col-md-2">Описание</div>
+      <div class="col-md-2">Компетенции</div>
+      <div class="col-md-2">Доступность</div>
+      <div class="col-md-2">Операции</div>
+  </div>
+</div>
+
+{% for item in recommendation %}
+<div class="sign-table__item">
+    <div class="row">
+      <div class="col-md-2">{{ item.title }}</div>
+      <div class="col-md-2">{{ item.get_type_display }}</div>
+      <div class="col-md-2">{{ item.description }}</div>
+      <div class="col-md-2"><i class="fa-solid fa-layer-group" style="color:brown"></i> {{ item.mark1 }} <i class="fa-solid fa-layer-group" style="color:green"></i> {{ item.mark2 }} <i class="fa-solid fa-layer-group" style="color:orange"></i> {{ item.mark3 }} <i class="fa-solid fa-layer-group" style="color:purple"></i> {{ item.mark4 }}</div>
+      <div class="col-md-2">{{ item.link }}</div>
+      <div class="col-md-2 text-end">
+        <form action="{% url 'route-add' pk=item.id %}" method="POST" style="display: inline;">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i></button>
+      </form>
+  </div>
+</div>
+</div>
+{% empty %}
+<p>Материалов нет</p>
+{% endfor %}
+
+</div>
+{% endblock %}
