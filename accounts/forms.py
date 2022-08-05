@@ -3,6 +3,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.views import PasswordResetForm
 from .models import Account
 
+from core.models import Municipality
+
 
 class RegisterForm(UserCreationForm):
     email = forms.EmailField(label='Email')
@@ -11,17 +13,18 @@ class RegisterForm(UserCreationForm):
     middle_name = forms.CharField(max_length=32, required=False)
     date_of_birth = forms.DateField()
     f_agree = forms.BooleanField()
+    municipality = forms.ModelChoiceField(queryset=Municipality.objects.all(), empty_label='')
 
     class Meta:
         model = Account
-        fields = ('email', 'first_name', 'last_name', 'middle_name', 'date_of_birth')
+        fields = ('email', 'first_name', 'last_name', 'middle_name', 'date_of_birth', 'municipality')
 
 
 class AccountUpdateForm(forms.ModelForm):
     class Meta:
         model = Account
-        fields = ['email', 'first_name', 'last_name', 'middle_name', 'gender', 'date_of_birth', 'national',
-                  'phone_number', 'subject_of_country', 'municipality', 'education_level', 'education_document_serial',
+        fields = ['email', 'image', 'first_name', 'last_name', 'middle_name', 'gender', 'date_of_birth', 'national',
+                  'phone_number', 'municipality', 'education_level', 'education_document_serial',
                   'education_document_number',  'education_document_reg_number', 'education_document_date',
                   'education_document_second_name', 'education_document_first_name', 'education_document_middle_name',
                   'education_qualify', 'education_pow', 'education_rank', 'work', 'work_pos', 'work_exp', 'work_edu_exp', 'document_serial',

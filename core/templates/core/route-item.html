@@ -6,17 +6,10 @@
 <div class="container">
   <h2 class="my-3">Образовательный маршрут</h2>
 
-  <nav class="mb-3 nav nav-pills flex-column flex-sm-row">
-    <a class="text-sm-center nav-link" href="{% url 'route-profile' %}">Профиль</a>
-    <a class="text-sm-center nav-link" href="{% url 'route-diagnostics' %}">Диагностика</a>
-    <a class="text-sm-center nav-link active" href="{% url 'route' %}">Индивидуальный план</a>
-    <a class="text-sm-center nav-link" href="{% url 'route-manuals' %}">Материалы</a>
-</nav>
-
 <div class="account-header">
     <div class="row">
       <div class="my-3 col-lg-4 offset-lg-4 text-center">
-        <h3>Редактирование материала</h3>
+        <h3>Редактирование этапа образовательного маршрута</h3>
       </div>
     </div>
   </div>
@@ -31,15 +24,29 @@
         </div>
         {% endif %}
 
-        {% for field in form %}
         <div class="form-group form-group-required">
-          <label>{{ field.label_tag }}</label>
-          {{ field|attr:"class:form-control"|attr:"required" }}
-          {% for error in field.errors %}
+          <label>Дедлайн</label>
+          {{ form.deadline|attr:"class:form-control"|attr:"required"|attr:"type:date" }}
+          {% for error in form.deadline.errors %}
           <p class="my-2 alert alert-danger">{{ error }}</p>
           {% endfor %}
         </div>
-        {% endfor %}
+
+        <div class="form-group form-group-required">
+          <label>Статус</label>
+          {{ form.status|attr:"class:form-select"|attr:"required" }}
+          {% for error in form.status.errors %}
+          <p class="my-2 alert alert-danger">{{ error }}</p>
+          {% endfor %}
+        </div>
+
+        <div class="form-group">
+          <label>Рефлексия</label>
+          {{ form.reflection|attr:"class:form-control" }}
+          {% for error in form.reflection.errors %}
+          <p class="my-2 alert alert-danger">{{ error }}</p>
+          {% endfor %}
+        </div>
 
         <button class="mb-4 btn btn-primary btn-block btn-lg" type="submit">Сохранить</button>
       </form>

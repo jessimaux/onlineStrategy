@@ -1,0 +1,96 @@
+{% extends 'core/page-layout.html' %}
+{% load widget_tweaks %}
+{% load static %}
+{% block title %}Курсы{% endblock %}
+{% block page %}
+<div class="container">
+  <h2 class="my-3">Цифровой профиль пользователя</h2>
+
+  <div class="row bg-white rounded shadow-sm p-3 mt-3">
+    <div class="col-lg-3 p-3">
+        <div class="profile-image-wrap">
+          <img src="{{ account.image.url }}" class="profile-image">
+        </div>
+    </div>
+
+    <div class="col-lg-3 p-3">
+      {{ account.last_name }} {{ account.first_name }} {{ account.middle_name }} <br>
+    </div>
+
+    <div class="col-lg-6">
+      <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+      <script type="text/javascript">
+        google.charts.load("current", {packages:["corechart"]});
+        google.charts.setOnLoadCallback(drawChart);
+        function drawChart() {
+          var data = google.visualization.arrayToDataTable([
+            ['Шкала', 'Результат'],
+            ['Шкала 1', {{ result.0 }}],
+            ['Шкала 2', {{ result.1 }}],
+            ['Шкала 3', {{ result.2 }}],
+            ['Шкала 4', {{ result.3 }}]
+            ]);
+
+          var options = {
+            pieHole: 0.4,
+          };
+
+          var chart = new google.visualization.PieChart(document.getElementById('donutchart'));
+          chart.draw(data, options);
+        }
+      </script>
+      <div id="donutchart"></div>
+    </div>
+  </div>
+
+  <h2 class="my-3">Образовательный маршрут</h2>
+  <div class="sign-table d-none d-sm-block d-block d-sm-none d-md-block mt-3">
+    <div class="row sign-row">
+      <div class="col-md-2">Наименование</div>
+      <div class="col-md-2">Тип</div>
+      <div class="col-md-2">Описание</div>
+      <div class="col-md-2">Статус</div>
+      <div class="col-md-2">Доступность</div>
+      <div class="col-md-2">Операции</div>
+  </div>
+</div>
+
+   {% for item in route %}
+    <div class="sign-table__item" id="item_{{ item.manual.id }}">
+        <div class="row">
+            <div class="col-md-2">{{ item.manual.title }}</div>
+            <div class="col-md-2">{{ item.manual.get_type_display }}</div>
+            <div class="col-md-2">{{ item.manual.description }}</div>
+            <div class="col-md-2">{{ item.get_status_display }}</div>
+            <div class="col-md-2">{{ item.manual.link }}</div>
+            <div class="col-md-2 text-end"></div>
+      </div>
+  </div>
+  {% empty %} <p>Материалов нет</p>
+  {% endfor %}
+
+  <h2 class="my-3">Открытые уроки</h2>
+  <div class="sign-table d-none d-sm-block d-block d-sm-none d-md-block">
+    <div class="row sign-row">
+      <div class="col-md-4">Название</div>
+      <div class="col-md-4">Дата</div>
+      <div class="col-md-2">Статус</div>
+      <div class="col-md-2">Операции</div>
+    </div>
+  </div>
+
+  {% for sign in lesson_signs %}
+  <div class="sign-table__item">
+    <div class="row">
+      <div class="col-md-4">{{sign.lesson_title}}</div>
+      <div class="col-md-4">{{sign.date|date:"d.m.Y H:i"}}</div>
+      <div class="col-md-2">{{sign.get_status_display}}</div>
+      <div class="col-md-2"></div>
+    </div>
+  </div>
+  {% empty %} <p>Заявок нет</p>
+  {% endfor %}
+  {% include "core/pagination.html" %}
+
+</div>
+{% endblock %}

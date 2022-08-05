@@ -6,78 +6,131 @@
 <div class="container">
     <div class="row">
         <div class="my-3 col-md-12">
-            <div class="course-header">
+            <div class="course-header rounded shadow-sm mb-3">
                 <img src="{% static 'core/img/course.jpg' %} " alt="" class="course-header-image">
                 <div class="course-text">
-                    <p>{{ form.date_start|date:"d.m.Y" }} - {{ form.date_end|date:"d.m.Y" }}</p>
-                    <h4>{{ form.title }}</h4>
+                    <div class="course-data mb-3">{{ form.date_start|date:"d.m.Y" }} - {{ form.date_end|date:"d.m.Y" }}</div>
+                    <h3 class="course-title mb-3">{{ form.title }}</h3>
                     <a href="{% url 'course-signup' form.id %}" class="btn btn-primary text-white">{{ is_registrated|yesno:"Перейти к заявке,Записаться," }}</a>
                 </div>
-                <div class="course-header-footer text-center">
-                    <p class='text-white'>Продолжительность<br>{{ form.duration }} ч.</p>
-                    <p class='text-white'>Форма обучения<br>{{ form.get_type_education_display }}</p>
-                    <p class='text-white'>Удостоверение<br>{{ form.certificate }}</p>
+
+                <div class="course-header-footer text-center p-3">
+                    <div class="course-data text-white fw-bold">Продолжительность<br>{{ form.duration }} ч.</div>
+                    <div class="course-data text-white fw-bold">Форма обучения<br>{{ form.get_type_education_display }}</div>
+                    <div class="course-data text-white fw-bold">Удостоверение<br>{{ form.certificate }}</div>
                 </div>
             </div>
 
-            <div class="my-3 course-nav">
-                <a href="#description">Чему научитесь</a>
+
+            <div class="course-nav mb-3">
+                <div class="course-data"><a href="#description">Чему научитесь</a></div>
                 <div class="course-separator"></div>
-                <a href="#program">Программа</a>
+                <div class="course-data"><a href="#program">Программа</a></div>
                 <div class="course-separator"></div>
-                <a href="#speakers">Спикеры</a>
+                <div class="course-data"><a href="#speakers">Спикеры</a></div>
             </div>
 
-            <div class="my-3 course-section" id='description'>
-                <h2>Описание курса</h2>
-                <p>{{ form.description }}</p>
+            <div class="app-card p-1 mb-3" id='description'>
+                <div class="app-card-header p-3">
+                    <div class="row justify-content-between align-items-center">
+                      <div class="col-auto">
+                        <h4>Описание курса</h4>
+                    </div>
+                </div>
             </div>
-
-            <div class="my-3 course-section" id='description'>
-                <h2>Кому подойдут эти курсы</h2>
-                <p>{{ form.audience }}</p>
-            </div>
-
-            <div class="my-3 course-section" id='description'>
-                <h2>Почему стоит пройти этот курс</h2>
-                <p>{{ form.reason }}</p>
-            </div>
-
-            <div class="my-3 course-section" id='program'>
-                <h2>Программа курса</h2>
-                <div class="accordion" id="accordion">
-                    {% for item in program %}
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="heading{{ forloop.counter }}">
-                          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
-                            {{ item.item }}
-                        </button>
-                    </h2>
-                    <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse" aria-labelledby="heading{{ forloop.counter }}" data-bs-parent="#accordionExample">
-                      <div class="accordion-body">
-
-                      </div>
-                  </div>
-              </div>
-              {% endfor %}
-
-          </div>
-      </div>
-
-      <div class="my-3 course-section" id='speakers'>
-        <h2>Спикеры курса</h2>
-        <div class="row">
-            {% for speaker in speakers %}
-            <div class="col-sm-4">
-                <div class="card">
-                  <div class="card-body">
-                    <h5 class="card-title">{{ speaker.name }}</h5>
-                    <p class="card-text">{{ speaker.description }}</p>
+            <div class="app-card-body p-3">
+                <div class="row justify-content-between align-items-center">
+                  <div class="col-auto">
+                    {{ form.description }}
                 </div>
             </div>
         </div>
-        {% endfor %}
     </div>
+
+    <div class="app-card p-1 mb-3" id='description'>
+        <div class="app-card-header p-3">
+            <div class="row justify-content-between align-items-center">
+              <div class="col-auto">
+                <h4>Кому подойдут эти курсы</h4>
+            </div>
+        </div>
+    </div>
+    <div class="app-card-body p-3">
+        <div class="row justify-content-between align-items-center">
+          <div class="col-auto">{{ form.audience }}</div>
+      </div>
+  </div>
+</div>
+
+<div class="app-card p-1 mb-3" id='description'>
+    <div class="app-card-header p-3">
+        <div class="row justify-content-between align-items-center">
+          <div class="col-auto">
+            <h4>Почему стоит пройти этот курс</h4>
+        </div>
+    </div>
+</div>
+<div class="app-card-body p-3">
+    <div class="row justify-content-between align-items-center">
+      <div class="col-auto">
+      {{ form.reason }}</div>
+  </div>
+</div>
+</div>
+
+<div class="app-card p-1 mb-3" id='description'>
+    <div class="app-card-header p-3">
+        <div class="row justify-content-between align-items-center">
+          <div class="col-auto">
+            <h4>Программа курса</h4>
+        </div>
+    </div>
+</div>
+<div class="app-card-body p-3">
+    <div class="row justify-content-between align-items-center">
+        <div class="accordion my-2" id="accordion">
+            {% for item in program %}
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="heading{{ forloop.counter }}">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
+                    {{ item.item }}
+                </button>
+            </h2>
+            <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse" aria-labelledby="heading{{ forloop.counter }}" data-bs-parent="#accordionExample">
+              <div class="accordion-body">
+
+              </div>
+          </div>
+      </div>
+      {% endfor %}
+
+  </div>
+</div>
+</div>
+</div>
+
+<div class="app-card p-1 mb-3" id='description'>
+    <div class="app-card-header p-3">
+        <div class="row justify-content-between align-items-center">
+          <div class="col-auto">
+            <h4>Спикеры курса</h4>
+        </div>
+    </div>
+</div>
+<div class="app-card-body p-3">
+    <div class="row">
+        {% for speaker in speakers %}
+        <div class="col-sm-4">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">{{ speaker.name }}</h5>
+                <p class="card-text">{{ speaker.description }}</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+</div>
 </div>
 
 </div>

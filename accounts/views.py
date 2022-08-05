@@ -35,7 +35,7 @@ class RegView(AuthenticationPermissionsMixin, FormView):
         current_site = get_current_site(self.request)
         mail_subject = 'Регистрация в цифровой экосистеме ГАУДПО ЛО ИРО | ' + str(current_site)
         message = render_to_string('accounts/acc_activate_email.html', {
-            'user': user,
+            'user': self.request.user,
             'domain': current_site.domain,
             'uid': urlsafe_base64_encode(force_bytes(user.pk)),
             'token': account_activation_token.make_token(user),

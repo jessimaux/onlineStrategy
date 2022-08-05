@@ -1,5 +1,12 @@
 from django.db import models
 from accounts.models import Account
+import os
+
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes import fields
+
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 class Diagnostic(models.Model):
@@ -45,12 +52,24 @@ class MethodistLessonSigns(models.Model):
     lesson_title = models.CharField(max_length=256, blank=True, null=True)
     lesson_description = models.TextField(blank=True, null=True)
     lesson_plan = models.FileField(upload_to='files')
+
+    def filename(self):
+        return os.path.basename(self.lesson_plan.name)
+
+    MEET_TYPE = (
+        ('ДИСТ', 'Дистанционная встреча'),
+        ('ОЧНО', 'Очная встреча')
+    )
+    meet_type = models.CharField(max_length=32, choices=MEET_TYPE, default='ОЧНО')
+    meet_link = models.CharField(max_length=512, blank=True, null=True)
+
     methodist_comment = models.TextField(blank=True, null=True)
 
     STATUS_CHOICES = (
         ('ОТКЛ', 'Отклонено'),
         ('СМОТР', 'На рассмотрении'),
-        ('ОДОБР', 'Одобрено'),
+        ('СОГЛОФ', 'Согласована очная встреча'),
+        ('СОГЛОН', 'Согласована дистанционная встреча'),
         ('ОТКАЗ', 'Отказ участника'),
         ('ПРОВ', 'Проведено')
     )
@@ -79,8 +98,63 @@ class Route(models.Model):
     STATUS_CHOICES = (
         ('АКТИВ', 'В процессе'),
         ('ЗАКР', 'Завершен'),
-        ('ПЛАН', 'Запланирован')
     )
     status = models.CharField(max_length=32, choices=STATUS_CHOICES, default='ПЛАН')
+    deadline = models.DateField(blank=True, null=True)
     reflection = models.TextField(blank=True, null=True)
     order = models.IntegerField(default=1000)
+
+
+class Events(models.Model):
+    date = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    user = models.ForeignKey(Account, on_delete=models.DO_NOTHING)
+
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = fields.GenericForeignKey('content_type', 'object_id')
+
+    EVENT_TYPE_CHOICES = (
+        ('EDIT', 'Редактировано'),
+        ('DEL', 'Удалено'),
+        ('CREATE', ' Создано')
+    )
+    event_type = models.CharField(max_length=32, choices=EVENT_TYPE_CHOICES, blank=True, null=True)
+
+
+class EventEditedFields(models.Model):
+    event = models.ForeignKey(Events, on_delete=models.CASCADE)
+    fields = models.CharField(max_length=256, blank=True, null=True)
+    prev = models.CharField(max_length=256, blank=True, null=True)
+    current = models.CharField(max_length=256, blank=True, null=True)
+
+
+class Municipality(models.Model):
+    name = models.CharField(max_length=256, blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
+
+class MethodMunicipality(models.Model):
+    mun = models.ForeignKey(Municipality, on_delete=models.CASCADE)
+    method = models.ForeignKey(Account, on_delete=models.CASCADE)
+
+
+@receiver(post_save, sender=Account)
+def my_handler(sender, **kwargs):
+    try:
+        methodist_acc = Methodist2Teacher.objects.get(teacher_id=kwargs['instance'].id)
+    except Methodist2Teacher.DoesNotExist:
+        municipality = kwargs['instance'].municipality
+        methodist_list = MethodMunicipality.objects.filter(mun=municipality)
+
+        min_teacher_count = float("inf")
+        methodist_acc = None
+        for methodist in methodist_list:
+            teacher_count = len(Methodist2Teacher.objects.filter(methodist_id=methodist.method_id))
+            if teacher_count <= min_teacher_count:
+                min_teacher_count = teacher_count
+                methodist_acc = methodist.method
+
+        obj = Methodist2Teacher(methodist=methodist_acc, teacher=kwargs['instance'])
+        obj.save()

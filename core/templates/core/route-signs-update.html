@@ -1,0 +1,103 @@
+{% extends 'core/page-layout.html' %}
+{% load widget_tweaks %}
+{% load static %}
+{% block title %}Наставничество{% endblock %}
+{% block page %}
+<div class="container">
+ <div class="account-header">
+  <div class="row">
+    <div class="my-3 col-lg-4 offset-lg-4 text-center">
+      <h3>Редактирование заявки на открытый урок</h3>
+      <p>№ {{ object.id}}</p>
+      <p>Статус: {{ object.get_status_display }}</p>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-4 offset-lg-4 bg-white rounded shadow-sm p-3">
+    <form method="post">
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+      <div class="alert alert-danger">
+        {{ form.non_field_errors }}
+      </div>
+      {% endif %}
+
+
+      <div class="form-group form-group-required">
+        <label>Название урока</label>
+        {{ form.lesson_title|attr:"class:form-control"|attr:"required" }}
+        {% for error in form.lesson_title.errors %}
+        <p class="my-2 alert alert-danger">{{ error }}</p>
+        {% endfor %}
+      </div>
+
+      <div class="form-group form-group-required">
+        <label>Описание урока</label>
+        {{ form.lesson_description|attr:"class:form-control"|attr:"required"}}
+        {% for error in form.lesson_description.errors %}
+        <p class="my-2 alert alert-danger">{{ error }}</p>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        <label>План урока</label>
+        {{ form.lesson_plan|attr:"class:form-control" }}
+        {% for error in form.lesson_plan.errors %}
+        <p class="my-2 alert alert-danger">{{ error }}</p>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        <label>Дата проведения</label>
+        {{ form.date|attr:"class:form-control"|attr:"type:datetime-local" }}
+        {% for error in form.date.errors %}
+        <p class="my-2 alert alert-danger">{{ error }}</p>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        <label>Формат проведения</label>
+        {{ form.meet_type|attr:"class:form-select" }}
+        {% for error in form.meet_type.errors %}
+        <p class="my-2 alert alert-danger">{{ error }}</p>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        <label id='label_meet_type'>Место проведения</label>
+        {{ form.meet_link|attr:"class:form-control" }}
+        {% for error in form.meet_link.errors %}
+        <p class="my-2 alert alert-danger">{{ error }}</p>
+        {% endfor %}
+      </div>
+
+      <script type="text/javascript">
+        var selectElem = document.getElementById('id_meet_type')
+        var labelElem = document.getElementById('label_meet_type')
+
+        selectElem.addEventListener('change', function() {
+          var index = selectElem.selectedIndex;
+          if(index==0) labelElem.innerHTML = 'Приглашение на видеоконференцию'
+          else labelElem.innerHTML = 'Место проведения'
+        })
+      </script>
+
+      <div class="form-group">
+        <label>Комментарий методиста</label>
+        {{ form.methodist_comment|attr:"class:form-control"|attr:"readonly"}}
+        {% for error in form.methodist_comment.errors %}
+        <p class="my-2 alert alert-danger">{{ error }}</p>
+        {% endfor %}
+      </div>
+
+      <button class="mb-4 btn btn-primary btn-block btn-lg" type="submit">Сохранить</button>
+    </form>
+  </div>
+</div>
+
+</form>
+
+</div>
+{% endblock %}

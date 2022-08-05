@@ -9,14 +9,16 @@ from django.db.models import Q
 
 from .models import Course, AccountCourse, CourseProgram, CourseSpeakers
 from accounts.models import Account
+from core.models import Events, EventEditedFields
 
-from .forms import AccountCourseInListForm, SignFormSet, FilterForm, ProgramFormSet
+from .forms import AccountCourseInListForm, SignFormSet, FilterForm, ProgramFormSet, SpeakerFormSet
 
 
-class CoursesListView(LoginRequiredMixin, ModeratorPermissionsMixin, ListView):
+class CoursesListView(LoginRequiredMixin, ListView):
     template_name = 'courses/courses.html'
     context_object_name = 'object_list'
     model = Course
+    paginate_by = 6
 
     def get_queryset(self):
         query = self.request.GET.get('search')
@@ -25,7 +27,7 @@ class CoursesListView(LoginRequiredMixin, ModeratorPermissionsMixin, ListView):
 
         if query or filter_subject or filter_profile:
             return Course.objects.filter(Q(title__icontains=query) & Q(profile__icontains=filter_profile) &
-                                     Q(subject__icontains=filter_subject))
+                                         Q(subject__icontains=filter_subject))
         else:
             return super(CoursesListView, self).get_queryset()
 
@@ -51,37 +53,82 @@ class CourseCreateView(LoginRequiredMixin, ModeratorPermissionsMixin, CreateView
 
     def get_context_data(self, **kwargs):
         context = super(CourseCreateView, self).get_context_data(**kwargs)
-        context['formset'] = ProgramFormSet(queryset=Course.objects.none())
+        context['programformset'] = ProgramFormSet(queryset=Course.objects.none(), prefix="program_formset")
+        context['speakerformset'] = SpeakerFormSet(queryset=Course.objects.none(), prefix="speaker_formset")
         return context
 
     def post(self, request, *args, **kwargs):
-        formset = ProgramFormSet(request.POST)
+        program_formset = ProgramFormSet(request.POST, prefix="program_formset")
+        speaker_formset = SpeakerFormSet(request.POST, prefix="speaker_formset")
         form = self.get_form()
-        if formset.is_valid() and form.is_valid():
-            return self.form_valid(formset, form)
+        if program_formset.is_valid() and speaker_formset.is_valid() and form.is_valid():
+            return self.form_valid(program_formset, speaker_formset, form)
         else:
-            return self.form_invalid(formset, form)
+            return self.form_invalid(program_formset, speaker_formset, form)
 
-    def form_valid(self, formset, form):
+    def form_valid(self, program_formset, speaker_formset, form):
         form.save()
-        for _form in formset:
+        for _form in program_formset:
+            obj = _form.save(commit=False)
+            obj.course_id = form.instance.id
+            obj.save()
+        for _form in speaker_formset:
             obj = _form.save(commit=False)
             obj.course_id = form.instance.id
             obj.save()
         return HttpResponseRedirect('/courses')
 
-    def form_invalid(self, formset, form):
-        return self.render_to_response(self.get_context_data(form=form, formset=formset))
+    def form_invalid(self, program_formset, speaker_formset, form):
+        return self.render_to_response(self.get_context_data(form=form,
+                                                             programformset=program_formset,
+                                                             speakerformset=speaker_formset))
 
 
 class CourseUpdateView(LoginRequiredMixin, ModeratorPermissionsMixin, UpdateView):
     model = Course
     template_name = 'courses/course_update.html'
     fields = '__all__'
-    success_url = '/course'
+    success_url = '/courses'
+
+    def get_context_data(self, **kwargs):
+        context = super(CourseUpdateView, self).get_context_data()
+        programs = CourseProgram.objects.filter(course_id=self.kwargs['pk'])
+        speakers = CourseSpeakers.objects.filter(course_id=self.kwargs['pk'])
+
+        context['programformset'] = ProgramFormSet(queryset=programs, prefix="program_formset")
+        context['speakerformset'] = SpeakerFormSet(queryset=speakers, prefix="speaker_formset")
+        return context
+
+    def post(self, request, *args, **kwargs):
+        programs = CourseProgram.objects.filter(course_id=self.kwargs['pk'])
+        speakers = CourseSpeakers.objects.filter(course_id=self.kwargs['pk'])
+
+        program_formset = ProgramFormSet(request.POST, prefix="program_formset")
+        speaker_formset = SpeakerFormSet(request.POST, prefix="speaker_formset")
+        form = self.get_form()
+        if program_formset.is_valid() and speaker_formset.is_valid() and form.is_valid():
+            return self.form_valid(program_formset, speaker_formset, form)
+        else:
+            return self.form_invalid(program_formset, speaker_formset, form)
+
+    def form_valid(self, program_formset, speaker_formset, form):
+        form.save()
+        print(2)
+        for _form in program_formset:
+            obj = _form.save(commit=False)
+            obj.course_id = self.kwargs['pk']
+            obj.save()
+        for _form in speaker_formset:
+            obj = _form.save(commit=False)
+            obj.course_id = self.kwargs['pk']
+            obj.save()
+        return HttpResponseRedirect('/courses')
+
+    def form_invalid(self, program_formset, speaker_formset, form):
+        return self.get(self.request, self.args, self.kwargs)
 
 
-class CourseView(LoginRequiredMixin, ModeratorPermissionsMixin, TemplateView):
+class CourseView(LoginRequiredMixin, TemplateView):
     template_name = 'courses/course.html'
 
     def registration_check(self):
@@ -134,7 +181,16 @@ class AccountCourseListView(LoginRequiredMixin, ModeratorPermissionsMixin, FormV
             return super(AccountCourseListView, self).get(request, *args, **kwargs)
 
     def form_valid(self, formset):
-        formset.save()
+        for _form in formset:
+            obj = _form.save(commit=False)
+            event = Events.objects.create(user=Account(id=self.request.user.pk),
+                                          content_object=AccountCourse(id=obj.id),
+                                          event_type='EDIT')
+            e_fields = EventEditedFields.objects.create(event=event,
+                                                        fields=list(obj.tracker.changed().keys()),
+                                                        prev=obj.tracker.previous('status'),
+                                                        current=obj.get_status_display())
+            obj.save()
         return super(AccountCourseListView, self).get(self.request)
 
 
@@ -172,11 +228,13 @@ class CreateAccountCourseView(LoginRequiredMixin, CreateView):
         form.save()
 
         # if email send is on
+        """
         msg = EmailMessage(f'Запись на мероприятие {obj_course.title}',
                            f'Сообщаем Вам о записи на мероприятие',
                            'from@example.com',
                            [obj_account.email])
         msg.send()
+        """
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):

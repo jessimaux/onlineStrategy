@@ -4,116 +4,149 @@
 {% block title %}Курсы{% endblock %}
 {% block page %}
 <div class="container">
-  <h2 class="my-3">Образовательный маршрут</h2>
-
-  <nav class="mb-3 nav nav-pills flex-column flex-sm-row">
-    <a class="text-sm-center nav-link" href="{% url 'route-profile' %}">Профиль</a>
-    <a class="text-sm-center nav-link" href="{% url 'route-diagnostics' %}">Диагностика</a>
-    <a class="text-sm-center nav-link active" href="{% url 'route' %}">Индивидуальный план</a>
-    <a class="text-sm-center nav-link" href="{% url 'route-manuals' %}">Материалы</a>
-</nav>
-
-{% if messages %}
-{% for message in messages %}
-<div class={{ message.tags }}>{{ message }}</div>
-{% endfor %}
-{% endif %}
-
-<div class="my-3 course-app">
-    <div class="row">
-      <div class="col-md-8 col-6">
-        <a href="{% url 'route-manuals' %}" class="btn btn-primary text-white"><i class="fas fa-plus"></i> Добавить материал</a>
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-success"> 
+        {{ message }} 
     </div>
-</div>
+    {% endfor %}
+    {% endif %}
 
-<div class="sign-table d-none d-sm-block d-block d-sm-none d-md-block mt-3">
-    <div class="row sign-row">
-      <div class="col-md-2">Наименование</div>
-      <div class="col-md-2">Тип</div>
-      <div class="col-md-2">Описание</div>
-      <div class="col-md-2">Статус</div>
-      <div class="col-md-2">Доступность</div>
-      <div class="col-md-2">Операции</div>
+    {% if diagnostics_exists %}
+    <div class="row mb-3">
+    <div class="col-12">
+      <div class="app-card app-card-stats-table h-100 shadow-sm">
+
+        <div class="app-card-header p-3">
+          <div class="row justify-content-between align-items-center">
+            <div class="col-auto">
+              <h4 class="app-card-title">Открытые уроки</h4>
+          </div>
+      </div>
   </div>
-</div>
 
+  <div class="app-card-body p-3 w-100">
+      <div class="table-responsive">
+        <table class="table app-table-hover text-left">
+          <thead>
+            <tr>
+              <th class="cell fw-bold">Наименование</th>
+              <th class="cell fw-bold">Тип</th>
+              <th class="cell fw-bold">Описание</th>
+              <th class="cell fw-bold">Статус</th>
+              <th class="cell fw-bold">Дедлайн</th>
+              <th class="cell fw-bold">Операции</th>
+          </tr>
+      </thead>
 
-<div id="sortable">
-    {% for item in route %}
-    <div class="sign-table__item" id="item_{{ item.manual.id }}">
-        <div class="row">
-            <div class="col-md-2"><i class="fa-solid fa-grip-vertical handle"></i> {{ item.manual.title }}</div>
-            <div class="col-md-2">{{ item.manual.get_type_display }}</div>
-            <div class="col-md-2">{{ item.manual.description }}</div>
-            <div class="col-md-2">{{ item.get_status_display }}</div>
-            <div class="col-md-2">{{ item.manual.link }}</div>
-            <div class="col-md-2 text-end">
-               <a href="{% url 'route-update' item.id %}" class="btn btn-primary text-white"><i class="far fa-edit"></i></a>
-               <form action="{% url 'route-delete' pk=item.id %}" method="POST" style="display: inline;" onsubmit="window.mytest()">
+      <tbody>
+        {% for item in route %}
+        <tr id="item_{{ item.manual.id }}">
+          <td class="cell"><i class="fa-solid fa-grip-vertical handle"></i> {{ item.manual.title }}</td>
+          <td class="cell">{{ item.manual.get_type_display }}</td>
+          <td class="cell">{{ item.manual.description }}</td>
+          <td class="cell">{{ item.get_status_display }}</td>
+          <td class="cell">{{ item.deadline|date:"d.m.Y" }}</td>
+          <td class="cell">
+              <a href="{% url 'route-update' item.id %}" class="btn btn-primary text-white"><i class="far fa-edit"></i></a>
+              <form action="{% url 'route-delete' pk=item.id %}" method="POST" style="display: inline;" onsubmit="window.mytest()">
                   {% csrf_token %}
                   <button type="submit" value="Delete" class="btn btn-primary"><i class="far fa-trash-alt"></i></button>
               </form>
               <script type="text/javascript">window.mytest = function() { var isValid = confirm('Вы уверены, что хотите удалить данный материал?');if (!isValid) { event.preventDefault();}}</script>
-          </div>
-      </div>
-  </div>
-  {% endfor %}
+          </td>
+      </tr>
+      {% endfor %}
+  </tbody>
+</table>
 </div>
 
 <form id="orderingForm" method="post">
     {% csrf_token %}
     <input type="hidden" id="orderingInput" name="ordering">
     <div class="offset-lg-10 lg-2">
-        <button id="saveOrdering" class="mb-4 btn btn-primary btn-block btn-lg mt-3" type="submit">Сохранить</button>
+        <button id="saveOrdering" class="btn btn-primary btn-block btn-lg" type="submit">Сохранить</button>
     </div>
 </form>
+</div>
+</div>
+</div>
 
 <script>
     $( function() {
-        $( "#sortable" ).sortable({
-            handle: ".handle"
-        });
+        $( "table tbody" ).sortable();
 
         $('#saveOrdering').click(function(){
-            $('#orderingInput').val($("#sortable").sortable('serialize').replaceAll('item[]=',''));
+            $('#orderingInput').val($("table tbody").sortable('serialize').replaceAll('item[]=',''));
         });
     });
 </script>
+</div>
 
+<div class="row">
+<div class="col-12">
+  <div class="app-card app-card-stats-table h-100 shadow-sm">
 
-
-<h2 class="my-3">Вам возможно подойдут</h2>
-
-<div class="sign-table d-none d-sm-block d-block d-sm-none d-md-block">
-    <div class="row sign-row">
-      <div class="col-md-2">Наименование</div>
-      <div class="col-md-2">Тип</div>
-      <div class="col-md-2">Описание</div>
-      <div class="col-md-2">Компетенции</div>
-      <div class="col-md-2">Доступность</div>
-      <div class="col-md-2">Операции</div>
+    <div class="app-card-header p-3">
+      <div class="row justify-content-between align-items-center">
+        <div class="col-auto">
+          <h4 class="app-card-title">Вам возможно подойдут</h4>
+      </div>
   </div>
 </div>
 
-{% for item in recommendation %}
-<div class="sign-table__item">
-    <div class="row">
-      <div class="col-md-2">{{ item.title }}</div>
-      <div class="col-md-2">{{ item.get_type_display }}</div>
-      <div class="col-md-2">{{ item.description }}</div>
-      <div class="col-md-2"><i class="fa-solid fa-layer-group" style="color:brown"></i> {{ item.mark1 }} <i class="fa-solid fa-layer-group" style="color:green"></i> {{ item.mark2 }} <i class="fa-solid fa-layer-group" style="color:orange"></i> {{ item.mark3 }} <i class="fa-solid fa-layer-group" style="color:purple"></i> {{ item.mark4 }}</div>
-      <div class="col-md-2">{{ item.link }}</div>
-      <div class="col-md-2 text-end">
+<div class="app-card-body px-4 w-100">
+  <div class="table-responsive">
+    <table class="table app-table-hover mt-2 text-left">
+      <thead>
+        <tr>
+          <th class="cell fw-bold">Наименование</th>
+          <th class="cell fw-bold">Тип</th>
+          <th class="cell fw-bold">Описание</th>
+          <th class="cell fw-bold">Компетенции</th>
+          <th class="cell fw-bold">Доступность</th>
+          <th class="cell fw-bold">Операции</th>
+      </tr>
+  </thead>
+
+  <tbody>
+
+    {% for item in recommendation %}
+    <tr>
+      <td class="cell">{{ item.title }}</td>
+      <td class="cell">{{ item.get_type_display }}</td>
+      <td class="cell">{{ item.description }}</td>
+      <td class="cell">
+        <i class="fa-solid fa-layer-group" style="color:brown"></i> {{ item.mark1 }} 
+        <i class="fa-solid fa-layer-group" style="color:green"></i> {{ item.mark2 }} 
+        <i class="fa-solid fa-layer-group" style="color:orange"></i> {{ item.mark3 }} 
+        <i class="fa-solid fa-layer-group" style="color:purple"></i> {{ item.mark4 }}
+    </td>
+    <td class="cell">{{ item.link }}</td>
+    <td class="cell">
         <form action="{% url 'route-add' pk=item.id %}" method="POST" style="display: inline;">
           {% csrf_token %}
           <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i></button>
       </form>
-  </div>
-</div>
-</div>
+  </td>
+</tr>
 {% empty %}
 <p>Материалов нет</p>
 {% endfor %}
+</tbody>
+</table>
 
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+{% else %}
+<div class="alert alert-danger"> 
+    <p>Сначала пройдите диагонстику</p> 
+</div>
+{% endif %}
 </div>
 {% endblock %}

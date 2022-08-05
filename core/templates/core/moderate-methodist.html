@@ -1,0 +1,54 @@
+{% extends 'core/page-layout.html' %}
+{% load widget_tweaks %}
+{% load static %}
+{% block title %}Курсы{% endblock %}
+{% block page %}
+<div class="container">
+  <h2 class="my-3">Образовательный маршрут</h2>
+
+  <nav class="nav nav-pills flex-column flex-sm-row">
+    <a class="text-sm-center nav-link" aria-current="page" href="{% url 'moderate-courses' %}">Курсы</a>
+    <a class="text-sm-center nav-link" aria-current="page" href="{% url 'moderate-manuals' %}">Материалы</a>
+    <a class="text-sm-center nav-link" href="{% url 'moderate-profiles' %}">Аккаунты</a>
+    <a class="text-sm-center nav-link active" href="{% url 'moderate-methodist' %}">Методисты</a>
+    <a class="text-sm-center nav-link" href="#">Статистика</a>
+    <a class="text-sm-center nav-link" href="#">Отчеты</a>
+  </nav>
+
+  <form action="" method="post">
+    {% csrf_token %}
+
+    {% for formset in formsets %}
+     {{ formset.management_form }}
+     {{ formset.non_form_errors }}
+
+     {% for form in formset %}
+      {{ form.non_field_errors }}
+      {{ form.errors }}
+     <div class="inline {{ formset.prefix }}">
+      {% for hidden in form.hidden_fields %}
+        {{ hidden }}
+      {% endfor %}
+      {{ form.method|attr:"class:form-select" }}
+      {{ form.DELETE }}
+     </div>
+     {% endfor %}
+     <script type="text/javascript">
+  $(function() {
+    $(".inline.{{ formset.prefix }}").formset({
+            prefix: "{{ formset.prefix }}", // The form prefix for your django formset
+          })
+  });
+</script>
+    {% endfor %}
+
+    <button class="mb-4 btn btn-primary btn-block btn-lg mt-3" type="submit">Сохранить</button>
+
+  </form>
+
+</div>
+{% endblock %}
+
+{% block bottom_scripts %}
+<script src="{% static 'core/js/jquery.formset.js' %}"></script>
+{% endblock %}

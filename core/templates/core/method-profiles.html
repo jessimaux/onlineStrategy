@@ -9,6 +9,7 @@
   <nav class="nav nav-pills flex-column flex-sm-row">
     <a class="text-sm-center nav-link active" aria-current="page" href="{% url 'method-profiles' %}">Список учителей</a>
     <a class="text-sm-center nav-link" href="{% url 'method-signs' %}">Заявки</a>
+    <a class="text-sm-center nav-link" href="{% url 'method-statistics' %}">Статистика</a>
   </nav>
 
   <div class="my-3 course-app">
@@ -36,7 +37,7 @@
   {% for item in object_list %}
   <div class="sign-table__item">
     <div class="row">
-      <div class="col-md-2">{{ item.teacher.first_name }}</div>
+      <div class="col-md-2"><a href="{% url 'method-profiles-item' item.teacher.id %}">{{ item.teacher.first_name }}</a></div>
       <div class="col-md-2">{{ item.teacher.last_name }}</div>
       <div class="col-md-2">{{ item.teacher.middle_name }}</div>
       <div class="col-md-2">{{ item.teacher.subject_of_country }}</div>

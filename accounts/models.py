@@ -57,17 +57,17 @@ class Account(AbstractBaseUser):
         ('М', 'Мужской'),
         ('Ж', 'Женский'),
     )
-    gender = models.CharField(max_length=32, choices=GENDER_CHOICES, blank=True)
+    gender = models.CharField(max_length=32, choices=GENDER_CHOICES, default=None, null=True)
     date_of_birth = models.DateField(blank=True, null=True)
 
     NATIONAL_CHOICES = (
         ('ПР', 'Прочее'),
         ('РФ', 'Российская федерация'),
     )
-    national = models.CharField(max_length=32, choices=NATIONAL_CHOICES, blank=True)
-    subject_of_country = models.CharField(max_length=32, blank=True)
-    municipality = models.CharField(max_length=32, blank=True)
+    national = models.CharField(max_length=32, choices=NATIONAL_CHOICES, default=None, null=True)
+    municipality = models.ForeignKey('core.Municipality', on_delete=models.CASCADE, default=None)
 
+    # TODO: make validation on client-side
     phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$',
                                  message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
     phone_number = models.CharField(validators=[phone_regex], max_length=17, blank=True)  # validators should be a list
@@ -80,7 +80,7 @@ class Account(AbstractBaseUser):
         ('СПЦ', 'Специалитет'),
         ('МАГ', 'Магистратура'),
     )
-    education_level = models.CharField(max_length=32, choices=EDUCATION_CHOICES, blank=True)
+    education_level = models.CharField(max_length=32, choices=EDUCATION_CHOICES, default=None, null=True)
     education_document_serial = models.CharField(max_length=6, blank=True)
     education_document_number = models.CharField(max_length=7, blank=True)
     education_document_reg_number = models.CharField(max_length=4, blank=True)
@@ -94,19 +94,19 @@ class Account(AbstractBaseUser):
         ('КН', 'Кандидат наук'),
         ('ДОК', 'Доктор наук'),
     )
-    education_pow = models.CharField(max_length=32, choices=EDUCATION_POW_CHOICES, blank=True)
+    education_pow = models.CharField(max_length=32, choices=EDUCATION_POW_CHOICES, default=None, null=True)
     EDUCATION_RANK_CHOICES = (
         ('Н', 'Нет звания'),
         ('КН', 'Доцент'),
         ('ДОК', 'Профессор'),
     )
-    education_rank = models.CharField(max_length=32, choices=EDUCATION_RANK_CHOICES, blank=True)
+    education_rank = models.CharField(max_length=32, choices=EDUCATION_RANK_CHOICES, default=None, null=True)
 
     # Work information block
     work = models.CharField(max_length=128, blank=True)
     work_pos = models.CharField(max_length=128, blank=True)
-    work_exp = models.IntegerField(blank=True, null=True)
-    work_edu_exp = models.IntegerField(blank=True, null=True)
+    work_exp = models.PositiveIntegerField(blank=True, null=True)
+    work_edu_exp = models.PositiveIntegerField(blank=True, null=True)
 
     # Document
     document_serial = models.CharField(max_length=4, blank=True)
@@ -128,7 +128,7 @@ class Account(AbstractBaseUser):
     superuser = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['first_name', 'last_name', 'date_of_birth']
+    REQUIRED_FIELDS = ['first_name', 'last_name', 'date_of_birth', 'municipality']
 
     objects = AccountsManager()
 

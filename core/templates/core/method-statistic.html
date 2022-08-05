@@ -1,0 +1,35 @@
+{% extends 'core/page-layout.html' %}
+{% load widget_tweaks %}
+{% load static %}
+{% block title %}Наставничество{% endblock %}
+{% block page %}
+<div class="container">
+  <h2 class="my-3">Наставничество</h2>
+
+  <nav class="nav nav-pills flex-column flex-sm-row">
+    <a class="text-sm-center nav-link" aria-current="page" href="{% url 'method-profiles' %}">Список учителей</a>
+    <a class="text-sm-center nav-link" href="{% url 'method-signs' %}">Заявки</a>
+    <a class="text-sm-center nav-link active" href="{% url 'method-statistics' %}">Статистика</a>
+</nav>
+
+<div class="sign-table d-none d-sm-block d-block d-sm-none d-md-block">
+    <div class="row sign-row">
+      <div class="col-md-4">Аккаунт</div>
+      <div class="col-md-4">Материал</div>
+      <div class="col-md-4">Запланированная дата</div>
+  </div>
+</div>
+
+{% for item in object_list %}
+<div class="sign-table__item">
+    <div class="row">
+    <div class="col-md-4"><a href="{% url 'method-profiles-item' item.account_id %}">{{ item.account_id }}</a></div>
+    <div class="col-md-4">{{ item.manual.title }}</div>
+    <div class="col-md-4">{{ item.deadline|date:"d.m.Y" }}</div>
+</div>
+</div>
+{% empty %}
+<p>Аккаунтов нет</p>
+{% endfor %}
+</div>
+{% endblock %}

@@ -1,6 +1,8 @@
 from django.db import models
 from accounts.models import Account
 
+from model_utils import FieldTracker
+
 from django.urls import reverse_lazy
 
 # TODO: ITS REALLY NEED TO BE HERE? OR IN CLASS?
@@ -22,7 +24,7 @@ class Course(models.Model):
     type = models.CharField(max_length=64, choices=TYPE_CHOICES,blank=True)
     description = models.TextField(blank=True)
     audience = models.CharField(max_length=256, blank=True)
-    reason = models.TextField(max_length=256, blank=True)
+    reason = models.TextField(max_length=512, blank=True)
     profile = models.CharField(max_length=256, default='all')
     subject = models.CharField(max_length=256, default='all')
     date_start = models.DateField(blank=True, null=True)
@@ -55,6 +57,8 @@ class AccountCourse(models.Model):
     role = models.CharField(max_length=32, choices=ROLE_CHOICES, default='УЧ')
 
     reg_date = models.DateTimeField(auto_now_add=True)
+
+    tracker = FieldTracker()
 
     def get_absolute_url(self):
         return '/'

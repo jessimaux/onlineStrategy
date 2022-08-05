@@ -109,40 +109,80 @@
                 <div class="col-md-12">
                     <div class="form-group">
                         <label for="reason">Программа</label>
-                        {{ formset.management_form }}
-                        <div style="display:none;" id="form_template">
+                        {{ programformset.management_form }}
+                        <div style="display:none;" id="program_form_template">
                             <div class="row">
                                 <div class="col-md-10">
                                     <div class="form-group">
                                         <label for="reason">Название модуля</label>
-                                        {{ formset.empty_form.item|attr:"class:form-control" }}
+                                        {{ programformset.empty_form.item|attr:"class:form-control" }}
                                     </div>
                                 </div>
                                 <div class="col-md-2">
                                     <div class="form-group">
                                         <label for="reason">Продолжительность</label>
-                                        {{ formset.empty_form.duration|attr:"class:form-control" }}
+                                        {{ programformset.empty_form.duration|attr:"class:form-control" }}
                                     </div>
                                 </div>
                             </div>
                         </div><!-- stores empty form for javascript -->
                         
-                        <div id="forms" class="form-group"></div><!-- where the generated forms go -->
+                        <div id="program-forms" class="form-group"></div><!-- where the generated forms go -->
                         
-                        <input type="button" id="add_more" class="btn btn-primary" value="Добавить" />
+                        <input type="button" id="add_more_program" class="btn btn-primary" value="Добавить" />
 
                         <script>
-                           $('#add_more').click(function () {
-                            let total_form = $('#id_form-TOTAL_FORMS');
+                           $('#add_more_program').click(function () {
+                            let total_form = $('#id_program_formset-TOTAL_FORMS');
                             let form_idx = total_form.val();
 
-                            $('#forms').append($('#form_template').html().replace(/__prefix__/g, form_idx));
+                            $('#program-forms').append($('#program_form_template').html().replace(/__prefix__/g, form_idx));
                             $('html, body').animate({scrollTop:999000}, 400);
                             total_form.val(parseInt(form_idx)+1);
                         });
                     </script>
                 </div>
             </div>
+
+
+            <div class="col-md-12">
+                <div class="form-group">
+                        <label for="reason">Спикеры</label>
+                        {{ speakerformset.management_form }}
+                        <div style="display:none;" id="speaker_form_template">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>ФИО</label>
+                                        {{ speakerformset.empty_form.name|attr:"class:form-control" }}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="reason">Дополнительные сведения</label>
+                                        {{ speakerformset.empty_form.description|attr:"class:form-control" }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="speaker-forms" class="form-group"></div>
+                        
+                        <input type="button" id="add_more_speaker" class="btn btn-primary" value="Добавить" />
+
+                        <script>
+                           $('#add_more_speaker').click(function () {
+                            let total_form = $('#id_speaker_formset-TOTAL_FORMS');
+                            let form_idx = total_form.val();
+
+                            $('#speaker-forms').append($('#speaker_form_template').html().replace(/__prefix__/g, form_idx));
+                            $('html, body').animate({scrollTop:999000}, 400);
+                            total_form.val(parseInt(form_idx)+1);
+                        });
+                    </script>
+                </div>
+            </div>
+
 
             <div class="col-md-3">
                 <div class="form-group form-group-required">

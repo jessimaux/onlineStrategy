@@ -4,35 +4,56 @@ from django.http import HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from onlineStrategy.permissions import ModeratorPermissionsMixin, MethodistPermissionsMixin
 
-from django.views.generic import ListView, TemplateView, UpdateView, CreateView, DeleteView
+from django.views.generic import ListView, TemplateView, UpdateView, CreateView, DeleteView, FormView
 from django.http import HttpResponseRedirect
 
 from courses.models import Course, AccountCourse
 from accounts.models import Account
-from .models import Question, Diagnostic, DiagnosticResult, Methodist2Teacher, MethodistLessonSigns, RouteManual, Route
+from .models import Question, Diagnostic, DiagnosticResult, Methodist2Teacher, MethodistLessonSigns, RouteManual, Route,\
+    Events, MethodMunicipality, Municipality
 
 from django.db.models import Q
 
-from .forms import QuestionFormSet, ImageForm, OrderingForm
+from .forms import QuestionFormSet, OrderingForm, MethodMunicipalityInlineFormset
 
 from django.urls import reverse_lazy
 from django.contrib import messages
 from .tools import negative_number_is_zero
 
+from django.contrib.contenttypes.models import ContentType
+from django.core.paginator import Paginator
+from django.shortcuts import render
 
-class IndexView(LoginRequiredMixin, ListView):
+from datetime import date
+
+
+class IndexView(LoginRequiredMixin, TemplateView):
     template_name = 'core/index.html'
-    context_object_name = 'object_list'
-
-    def get_queryset(self):
-        return AccountCourse.objects.filter(account_id=self.request.user.id)
-
-
-class RouteProfileView(LoginRequiredMixin, TemplateView):
-    template_name = 'core/route-profile.html'
 
     def get_context_data(self, **kwargs):
-        context = super(RouteProfileView, self).get_context_data()
+        context = super(IndexView, self).get_context_data()
+
+        # Notify manager need rework
+        """
+        lesson_sign_list = MethodistLessonSigns.objects.filter(teacher_id=self.request.user.id)
+        acc_course_list = AccountCourse.objects.filter(account_id=self.request.user.id)
+
+        course_list = list()
+        for course in acc_course_list:
+            if course.course_id not in course_list:
+                course_list.append(course.course_id)
+
+        context['notify_list'] = Events.objects.filter(Q(object_id__in=acc_course_list.values('id'),
+                                                         content_type__pk=ContentType.objects.get_for_model(AccountCourse).id) |
+                                                       Q(object_id__in=course_list,
+                                                         content_type__pk=ContentType.objects.get_for_model(Course).id) |
+                                                       Q(object_id__in=lesson_sign_list.values('id'),
+                                                         content_type__pk=ContentType.objects.get_for_model(MethodistLessonSigns).id)).order_by('date').reverse()[:15]
+
+        context['type_dict'] = {'AccCourse': ContentType.objects.get_for_model(AccountCourse).id,
+                                'Course': ContentType.objects.get_for_model(Course).id,
+                                'LessonSign': ContentType.objects.get_for_model(MethodistLessonSigns).id}
+        """
 
         total_mark1, total_mark2, total_mark3, total_mark4 = 0, 0, 0, 0
         diagnostics_results = DiagnosticResult.objects.filter(account_id=self.request.user.id)
@@ -42,21 +63,39 @@ class RouteProfileView(LoginRequiredMixin, TemplateView):
             total_mark3 += res.mark3
             total_mark4 += res.mark4
 
+        context['result_exists'] = diagnostics_results.exists()
         context['result'] = [total_mark1, total_mark2, total_mark3, total_mark4]
-        context['form'] = ImageForm()
         context['account'] = Account.objects.get(id=self.request.user.id)
+
+        try:
+            context['active_lesson'] = MethodistLessonSigns.objects.get(teacher_id=self.request.user.id,
+                                                                        status__in=('СМОТР', 'ОДОБР'))
+        except MethodistLessonSigns.DoesNotExist:
+            context['active_lesson'] = None
+
         try:
             context['method'] = Methodist2Teacher.objects.get(teacher_id=self.request.user.id)
         except Methodist2Teacher.DoesNotExist:
             context['method'] = None
+
         return context
 
-    def post(self, request, *args, **kwargs):
-        obj = Account.objects.get(id=self.request.user.id)
-        form = ImageForm(request.POST, request.FILES, instance=obj)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect('/route/profile')
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data()
+
+        lesson_signs = MethodistLessonSigns.objects.filter(teacher_id=self.request.user.id)
+        paginator_lesson_signs = Paginator(lesson_signs, 10)
+        page_number_lesson_signs = self.request.GET.get('lpage')
+        lpage_obj = paginator_lesson_signs.get_page(page_number_lesson_signs)
+        context['lpage_obj'] = lpage_obj
+
+        course_signs = AccountCourse.objects.filter(account_id=self.request.user.id)
+        paginator_course_signs = Paginator(course_signs, 10)
+        page_number_course_signs = self.request.GET.get('cpage')
+        cpage_obj = paginator_course_signs.get_page(page_number_course_signs)
+        context['cpage_obj'] = cpage_obj
+
+        return self.render_to_response(context)
 
 
 class RouteManualsListView(LoginRequiredMixin, ListView):
@@ -80,7 +119,7 @@ def add2route_manual(request, *args, **kwargs):
         try:
             obj = Route.objects.get(account=Account(id=request.user.pk),
                                     manual=RouteManual(id=kwargs['pk']))
-            messages.success(request, 'Материал уже добавлен в ваш образовательный маршрут')
+            messages.success(request, 'Материал уже находится в вашем образовательном маршруте')
         except Route.DoesNotExist:
             Route(account=Account(id=request.user.pk),
                   manual=RouteManual(id=kwargs['pk'])).save()
@@ -97,7 +136,13 @@ class RouteView(LoginRequiredMixin, TemplateView):
 
         """ selection manuals """
         # TODO: random queryset w max pos 50
-        profile = DiagnosticResult.objects.get(account_id=self.request.user.id)
+        try:
+            profile = DiagnosticResult.objects.get(account_id=self.request.user.id)
+            context['diagnostics_exists'] = True
+        except DiagnosticResult.DoesNotExist:
+            context['diagnostics_exists'] = False
+            return context
+
         using_manuals = Route.objects.filter(account_id=self.request.user.id)
         manuals = RouteManual.objects.exclude(id__in=using_manuals.values('manual_id'))
         context['recommendation'] = list()
@@ -116,7 +161,6 @@ class RouteView(LoginRequiredMixin, TemplateView):
         form = OrderingForm(request.POST)
         if form.is_valid():
             ordered_ids = form.cleaned_data["ordering"].split('&')
-            print(ordered_ids)
             c_order = 1
             for id in ordered_ids:
                 manual = Route.objects.get(account_id=self.request.user.id, manual_id=id)
@@ -134,8 +178,27 @@ class RouteDeleteView(LoginRequiredMixin, DeleteView):
 class RouteUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'core/route-item.html'
     model = Route
-    fields = ['status', 'reflection']
+    fields = ['deadline', 'status', 'reflection']
     success_url = '/route'
+
+
+class RouteSignsCreateView(LoginRequiredMixin, CreateView):
+    model = MethodistLessonSigns
+    fields = ['lesson_title', 'lesson_description', 'lesson_plan', 'date', 'meet_type', 'meet_link']
+    template_name = 'core/route-signs-up.html'
+    success_url = reverse_lazy('index')
+
+    def form_valid(self, form):
+        form.instance.teacher_id = self.request.user.id
+        form.save()
+        return super().form_valid(form)
+
+
+class RouteSignsUpdateView(LoginRequiredMixin, UpdateView):
+    model = MethodistLessonSigns
+    fields = ['lesson_title', 'lesson_description', 'lesson_plan', 'date', 'meet_type', 'meet_link', 'methodist_comment']
+    template_name = 'core/route-signs-update.html'
+    success_url = reverse_lazy('route-profile')
 
 
 class DiagnosticListView(LoginRequiredMixin, ListView):
@@ -181,7 +244,7 @@ class DiagnosticDetailView(LoginRequiredMixin, TemplateView):
                                                mark2=mark2,
                                                mark3=mark3,
                                                mark4=mark4)
-        return HttpResponseRedirect('/courses')
+        return HttpResponseRedirect('/route/profile')
 
     def get(self, request, *args, **kwargs):
         try:
@@ -216,7 +279,7 @@ class DiagnosticResultView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super(DiagnosticResultView, self).get_context_data()
         diagnostics_results = DiagnosticResult.objects.get(account_id=self.request.user.id,
-                                                              diagnostic_id=self.kwargs['pk'])
+                                                           diagnostic_id=self.kwargs['pk'])
         context['result'] = [diagnostics_results.mark1,
                              diagnostics_results.mark2,
                              diagnostics_results.mark3,
@@ -354,22 +417,79 @@ class MethodSignsListView(LoginRequiredMixin, MethodistPermissionsMixin, ListVie
         return object_list
 
 
-class MethodSignsDetailView(LoginRequiredMixin, MethodistPermissionsMixin, UpdateView):
+class MethodSignsUpdateView(LoginRequiredMixin, MethodistPermissionsMixin, UpdateView):
     model = MethodistLessonSigns
-    fields = ['lesson_title', 'lesson_description', 'lesson_plan', 'status', 'methodist_comment']
+    fields = ['lesson_title', 'lesson_description', 'lesson_plan', 'meet_type', 'meet_link', 'status', 'methodist_comment']
     template_name = 'core/method-signs-update.html'
     success_url = reverse_lazy('method-signs')
 
 
-class MethodSignsCreateView(LoginRequiredMixin, CreateView):
-    model = MethodistLessonSigns
-    fields = ['lesson_title', 'lesson_description', 'lesson_plan', 'date']
-    template_name = 'core/method-signs-up.html'
-    success_url = reverse_lazy('index')
+class MethodProfilesDetailView(LoginRequiredMixin, MethodistPermissionsMixin, TemplateView):
+    template_name = 'core/method-profiles-item.html'
 
-    def form_valid(self, form):
-        form.instance.teacher_id = self.request.user.id
-        form.save()
-        return super().form_valid(form)
+    def get_context_data(self, **kwargs):
+        context = super(MethodProfilesDetailView, self).get_context_data()
+
+        context['route'] = Route.objects.filter(account_id=self.kwargs['pk']).order_by('order')
+        total_mark1, total_mark2, total_mark3, total_mark4 = 0, 0, 0, 0
+        diagnostics_results = DiagnosticResult.objects.filter(account_id=self.kwargs['pk'])
+        for res in diagnostics_results:
+            total_mark1 += res.mark1
+            total_mark2 += res.mark2
+            total_mark3 += res.mark3
+            total_mark4 += res.mark4
+
+        context['result'] = [total_mark1, total_mark2, total_mark3, total_mark4]
+        context['account'] = Account.objects.get(id=self.kwargs['pk'])
+        context['lesson_signs'] = MethodistLessonSigns.objects.filter(teacher_id=self.kwargs['pk']).order_by('-id')
+
+        return context
 
 
+class MethodStatisticsView(LoginRequiredMixin, MethodistPermissionsMixin, ListView):
+    template_name = 'core/method-statistic.html'
+    context_object_name = 'object_list'
+    model = Route
+    paginate_by = 25
+
+    def get_queryset(self):
+        teachers = Methodist2Teacher.objects.filter(methodist_id=self.request.user.id)
+        object_list = Route.objects.filter(account_id__in=teachers.values('teacher_id'),
+                                           deadline__lt=date.today())
+        return object_list
+
+
+class ModerateMethodistFormView(LoginRequiredMixin, ModeratorPermissionsMixin, TemplateView):
+    template_name = 'core/moderate-methodist.html'
+
+    mun = Municipality.objects.all()
+
+    def get_context_data(self, **kwargs):
+        context = super(ModerateMethodistFormView, self).get_context_data()
+
+        context['formsets'] = list()
+
+        for i in range(len(self.mun)):
+            context['formsets'].append(MethodMunicipalityInlineFormset(instance=self.mun[i], prefix='mun_formset-'+str(i)))
+
+        return context
+
+    def post(self, *args, **kwargs):
+        formsets = list()
+        for i in range(len(self.mun)):
+            formsets.append(MethodMunicipalityInlineFormset(data=self.request.POST,
+                                                            instance=self.mun[i],
+                                                            prefix='mun_formset-'+str(i)))
+        for formset in formsets:
+            if formset.is_valid():
+                instances = formset.save(commit=False)
+
+                for form in formset:
+                    form_obj = form.save(commit=False)
+                    form_obj.save()
+
+                for obj in formset.deleted_objects:
+                    print(formset.deleted_objects)
+                    obj.delete()
+
+        return HttpResponseRedirect(reverse_lazy('moderate-methodist'))

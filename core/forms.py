@@ -1,6 +1,6 @@
 from django import forms
-from django.forms import modelformset_factory, BaseModelFormSet
-from .models import Answer, Question
+from django.forms import modelformset_factory, BaseModelFormSet, inlineformset_factory
+from .models import Answer, Question, Municipality, MethodMunicipality
 from accounts.models import Account
 
 
@@ -31,12 +31,19 @@ class AnswerForm(forms.ModelForm):
 QuestionFormSet = modelformset_factory(Question, AnswerForm, formset=BaseQuestionFormSet, extra=0)
 
 
-class ImageForm(forms.ModelForm):
-    """Form for the image model"""
-    class Meta:
-        model = Account
-        fields = ('image',)
-
-
 class OrderingForm(forms.Form):
     ordering = forms.CharField()
+
+
+class MethodMunicipalityForm(forms.ModelForm):
+    method = forms.ModelChoiceField(queryset=Account.objects.filter(methodist=True))
+
+    class Meta:
+        model = MethodMunicipality
+        fields = ['method']
+
+MethodMunicipalityInlineFormset = inlineformset_factory(Municipality,
+                                                        MethodMunicipality,
+                                                        form=MethodMunicipalityForm,
+                                                        can_delete=True,
+                                                        extra=0)

@@ -1,6 +1,5 @@
 from django.urls import path
 from . import views
-from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('auth', views.AuthView.as_view(redirect_authenticated_user=True), name='auth'),

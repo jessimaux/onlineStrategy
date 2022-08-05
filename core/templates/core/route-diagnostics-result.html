@@ -4,16 +4,14 @@
 {% block title %}Курсы{% endblock %}
 {% block page %}
 <div class="container">
-  <h2 class="my-3">Образовательный маршрут</h2>
-
-  <nav class="mb-3 nav nav-pills flex-column flex-sm-row">
-    <a class="text-sm-center nav-link" href="{% url 'route-profile' %}">Профиль</a>
-    <a class="text-sm-center nav-link active" href="{% url 'route-diagnostics' %}">Диагностика</a>
-    <a class="text-sm-center nav-link" href="#">Индивидуальный план</a>
-    <a class="text-sm-center nav-link" href="#">Материалы</a>
-  </nav>
-
-    {{ result }}
+   <div class="row bg-white rounded shadow-sm p-3 mt-3">
+    <div class="col-lg-12 p-3">
+      <h5>Результаты диагностики</h5>
+      <p>Методические компетенции: {{ result.0 }}</p>
+      <p>Функциональная грамотность(математическая, читательская, естественно-научная, финансовая, креативное мышление, глобальные компетенции): {{ result.1 }}</p>
+      <p>Психолого-педагогические компетенции: {{ result.2 }}</p>
+      <p>Предметные компетенции: {{ result.3 }}</p>
+    </div>
 
 </div>
 {% endblock %}

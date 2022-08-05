@@ -20,15 +20,26 @@
       <li class="nav-item">
           <a class="nav-link" href="{% url 'courses' %}">Программы</a>
       </li>
-      <li class="nav-item">
-          <a class="nav-link" href="{% url 'route-profile' %}">Образовательный маршрут</a>
+      <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Образование</a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="{% url 'route' %}">Образовательный маршрут</a></li>
+            <li><a class="dropdown-item" href="{% url 'route-diagnostics' %}">Диагностика</a></li>
+            <li><a class="dropdown-item" href="{% url 'route-manuals' %}">Материалы</a></li>
+          </ul>
       </li>
+
+      {% if methodist %}
           <li class="nav-item">
           <a class="nav-link" href="{% url 'method-profiles' %}">Наставничество</a>
       </li>
+      {% endif %}
+
+      {% if moderator %}
       <li class="nav-item">
           <a class="nav-link" href="{% url 'moderate-courses' %}">Модерация</a>
       </li>
+      {% endif %}
       <li class="nav-item">
           <a class="nav-link" href="#">Поддержка</a>
       </li>
@@ -46,8 +57,9 @@
 </div>
 </nav>
 
-<div class="content">
+<div class="content pt-3">
   {% block page %}
   {% endblock %}
 </div>
+{% block bottom_scripts %}{% endblock %}
 {% endblock %}

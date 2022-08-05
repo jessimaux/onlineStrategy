@@ -4,54 +4,51 @@
 {% block title %}Курсы{% endblock %}
 {% block page %}
 <div class="container">
-  <h3 class="my-3">Курсы</h3>
-
   <div class="row">
-    <div class="col-md-3">
-      <div class="row">
-        <div class="form-group bg-white rounded shadow-sm p-2">
-          <form action="" method="GET">          
-            <h6 class="my-2">Название курса</h6>
-            {{ form.search|attr:"class: form-control" }}
-            <h6 class="my-2">Профиль курса</h6>
-            {{ form.profile|attr:"class: form-select" }}
-            <h6 class="my-2">Предмет</h6>
-            {{ form.subject|attr:"class: form-select" }}
-            <button class="my-3 btn btn-primary btn-block">Применить</button>
-            </form>
-            <form action="{% url 'courses' %}">
-            <button class="btn btn-primary btn-block">Сбросить</button>
-            </form>
-        </div>
+    <div class="col-12 col-lg-3">
+      <div class="app-card shadow-sm d-flex flex-column p-2">
+        <form action="" method="GET">          
+          <h6 class="my-2">Название курса</h6>
+          {{ form.search|attr:"class: form-control" }}
+          <h6 class="my-2">Профиль курса</h6>
+          {{ form.profile|attr:"class: form-select" }}
+          <h6 class="my-2">Предмет</h6>
+          {{ form.subject|attr:"class: form-select" }}
+          <button class="my-3 btn btn-primary btn-block">Применить</button>
+        </form>
+        <form action="{% url 'courses' %}">
+          <button class="btn btn-primary btn-block">Сбросить</button>
+        </form>
       </div>
     </div>
 
 
-    <div class="col-md-9">
-      <div class="row">
+    <div class="col-12 col-lg-9">
+      <div class="row g-4">
         {% for item in object_list  %}
-        <div class="col-md-6">
-          <div class="form-group bg-white rounded shadow-sm p-2">
-            <a href="{% url 'course' item.id %}"><img src="{% static 'core/img/course.jpg' %}" alt=""></a>
-            <a href="{% url 'course' item.id %}"><h5>{{ item.title }}</h5></a>
-            <p>{{ item.get_type_display }}</p>
-            <p>{{ item.date_start|date:"d.m.Y" }} - {{ item.date_end|date:"d.m.Y" }}</p>
-
+        <div class="col-12 col-lg-6">
+          <div class="app-card app-card-course shadow-sm d-flex flex-column align-items-start p-2">
+            <div class="app-card-course-header mb-2">
+              <a href="{% url 'course' item.id %}">
+                <div class="app-card-course-image mb-1">
+                  <img src="{% static 'core/img/course.jpg' %}" alt="">
+                </div>
+                <h5>{{ item.title }}</h5>
+              </a>
+            </div>
+            <div class="app-card-course-body">
+              <div class="app-card-course-type mb-1">{{ item.get_type_display }}</div>
+              <div class="app-card-course-date">{{ item.date_start|date:"d.m.Y" }} - {{ item.date_end|date:"d.m.Y" }}</div>
+            </div>
           </div>
         </div>
 
         {% empty %}
         <p>Курсов нет</p>
         {% endfor %}
-
-        {% include 'core/pagination.html' %}
+        {% include "core/pagination.html" %}
       </div>
     </div>
   </div>
 </div>
 {% endblock %}
-
-
-<form class="float-end" method='GET'>
-  <input class="form-control"  placeholder="Поиск" type='text' name='q' value='{{ request.GET.q }}'>
-</form>
