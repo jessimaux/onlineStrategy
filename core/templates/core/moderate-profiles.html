@@ -4,54 +4,62 @@
 {% block title %}Курсы{% endblock %}
 {% block page %}
 <div class="container">
-  <h2 class="my-3">Модерация</h2>
+  <div class="row g-4 mb-4">
+    <div class="col-12">
+      <div class="app-card app-card-stats-table h-100 shadow-sm">
+        <div class="app-card-header p-3">
+          <div class="row justify-content-between align-items-center">
+            <div class="col-8">
+              <h4 class="app-card-title">Модерация учетных записей пользователей</h4>
+            </div>
+            <div class="col-4">
+              <form class="float-end" method='GET'>
+                <input class="form-control"  placeholder="Поиск" type='text' name='q' value='{{ request.GET.q }}'>
+              </form>
+            </div>
+          </div>
+        </div>
 
-  <nav class="nav nav-pills flex-column flex-sm-row">
-    <a class="text-sm-center nav-link" aria-current="page" href="{% url 'moderate-courses' %}">Курсы</a>
-    <a class="text-sm-center nav-link" aria-current="page" href="{% url 'moderate-manuals' %}">Материалы</a>
-    <a class="text-sm-center nav-link active" href="{% url 'moderate-profiles' %}">Аккаунты</a>
-    <a class="text-sm-center nav-link" href="{% url 'moderate-methodist' %}">Методисты</a>
-    <a class="text-sm-center nav-link" href="#">Статистика</a>
-    <a class="text-sm-center nav-link" href="#">Отчеты</a>
-  </nav>
+        <div class="app-card-body px-4 w-100">
+          <div class="table-responsive">
+            <table class="table app-table-hover mb-3 text-left">
+              <thead>
+                <tr>
+                  <th class="cell fw-bold">ID</th>
+                  <th class="cell fw-bold">Имя</th>
+                  <th class="cell fw-bold">Фамилия</th>
+                  <th class="cell fw-bold">Отчество</th>
+                  <th class="cell fw-bold">Регион</th>
+                  <th class="cell fw-bold">Муниципалитет</th>
+                  <th class="cell fw-bold">Организация</th>
+                </tr>
+              </thead>
 
-<div class="my-3 course-app">
-    <div class="row">
-      <div class="col-md-4 col-6 offset-md-8 offset-6">
-        <form class="float-end" method='GET'>
-          <input class="form-control"  placeholder="Поиск" type='text' name='q' value='{{ request.GET.q }}'>
-      </form>
+              <tbody>
+                {% for item in object_list %}
+                <tr>
+                  <td class="cell"><a href="{% url 'moderate-profile-card' item.id %}">{{ item.id }}</a></td>
+                  <td class="cell">{{ item.first_name }}</td>
+                  <td class="cell">{{ item.last_name }}</td>
+                  <td class="cell">{{ item.middle_name }}</td>
+                  <td class="cell">{{ item.subject_of_country }}</td>
+                  <td class="cell">{{ item.municipality }}</td>
+                  <td class="cell">{{ item.work }}</td>
+                </tr>
+                {% empty %}
+                <tr><td class="cell">Курсов нет</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                {% endfor %}
+                {% include 'core/pagination.html' %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-
-</div>
-</div>
-
-<div class="sign-table d-none d-sm-block d-block d-sm-none d-md-block">
-    <div class="row sign-row">
-      <div class="col-md-1">ID</div>
-      <div class="col-md-2">Имя</div>
-      <div class="col-md-2">Фамилия</div>
-      <div class="col-md-2">Отчество</div>
-      <div class="col-md-1">Регион</div>
-      <div class="col-md-2">Муниципалитет</div>
-      <div class="col-md-2">Организация</div>
-  </div>
-</div>
-
-{% for item in object_list %}
-<div class="sign-table__item">
-    <div class="row">
-      <div class="col-md-1"><a href="{% url 'moderate-profile-card' item.id %}">{{ item.id }}</a></div>
-    <div class="col-md-2">{{ item.first_name }}</div>
-    <div class="col-md-2">{{ item.last_name }}</div>
-    <div class="col-md-2">{{ item.middle_name }}</div>
-    <div class="col-md-1">{{ item.subject_of_country }}</div>
-    <div class="col-md-2">{{ item.municipality }}</div>
-    <div class="col-md-2">{{ item.work }}</div>
-</div>
-</div>
-{% empty %}
-<p>Аккаунтов нет</p>
-{% endfor %}
 </div>
 {% endblock %}

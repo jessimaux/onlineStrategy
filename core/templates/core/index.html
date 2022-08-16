@@ -25,60 +25,11 @@
 
 
       <div class="app-card-body px-4 w-100">
-          <div class="item border-bottom py-3">
-            <div class="row justify-content-between align-items-center">
-              <div class="col-auto">
-                <div class="item-label fw-bold">ФИО</div>
-                <div class="item-data">{{ account.last_name }} {{ account.first_name }} {{ account.middle_name }}</div>
-              </div><!--//col-->
-            </div><!--//row-->
-          </div><!--//item-->
-
-          <div class="item border-bottom py-3">
-            <div class="row justify-content-between align-items-center">
-              <div class="col-auto">
-                <div class="item-label fw-bold">Email</div>
-                <div class="item-data">{{ account.email }}</div>
-              </div><!--//col-->
-            </div><!--//row-->
-          </div><!--//item-->
-
-          <div class="item border-bottom py-3">
-            <div class="row justify-content-between align-items-center">
-              <div class="col-auto">
-                <div class="item-label fw-bold">Муниципалитет</div>
-                <div class="item-data">
-                  {{ account.municipality }}
-                </div>
-              </div><!--//col-->
-            </div><!--//row-->
-          </div><!--//item-->
-        </div><!--//app-card-body-->
-        <div class="app-card-footer p-4 mt-auto">
-         <a class="btn app-btn-secondary" href="{% url 'profile' user.id %}">Изменить данные профиля</a>
-       </div><!--//app-card-footer-->
-
-     </div><!--//app-card-->
-   </div>
-
-
-   <div class="col-6 col-lg-4">
-    <div class="app-card app-card-account shadow-sm d-flex flex-column align-items-start p-1">
-      <div class="app-card-header p-3">
-        <div class="row justify-content-between align-items-center">
-          <div class="col-auto">
-            <h4 class="app-card-title">Методист</h4>
-          </div><!--//col-->
-        </div><!--//row-->
-      </div><!--//app-card-header-->
-
-
-      <div class="app-card-body px-4 w-100">
         <div class="item border-bottom py-3">
           <div class="row justify-content-between align-items-center">
             <div class="col-auto">
               <div class="item-label fw-bold">ФИО</div>
-              <div class="item-data">{{ method.methodist.last_name }} {{ method.methodist.first_name }} {{ method.methodist.middle_name }}</div>
+              <div class="item-data">{{ account.last_name }} {{ account.first_name }} {{ account.middle_name }}</div>
             </div><!--//col-->
           </div><!--//row-->
         </div><!--//item-->
@@ -87,7 +38,7 @@
           <div class="row justify-content-between align-items-center">
             <div class="col-auto">
               <div class="item-label fw-bold">Email</div>
-              <div class="item-data">{{ method.methodist.email }}</div>
+              <div class="item-data">{{ account.email }}</div>
             </div><!--//col-->
           </div><!--//row-->
         </div><!--//item-->
@@ -97,18 +48,69 @@
             <div class="col-auto">
               <div class="item-label fw-bold">Муниципалитет</div>
               <div class="item-data">
-                {{ method.methodist.municipality }}
+                {{ account.municipality }}
               </div>
             </div><!--//col-->
           </div><!--//row-->
         </div><!--//item-->
       </div><!--//app-card-body-->
       <div class="app-card-footer p-4 mt-auto">
-        <a class="btn app-btn-secondary" href="{% url 'route-signs-create' %}">Пригласить на урок</a>
-      </div><!--//app-card-footer-->
+       <a class="btn app-btn-secondary" href="{% url 'profile' user.id %}">Изменить данные профиля</a>
+     </div><!--//app-card-footer-->
 
-    </div><!--//app-card-->
-  </div>
+   </div><!--//app-card-->
+ </div>
+
+
+ <div class="col-6 col-lg-4">
+  <div class="app-card app-card-account shadow-sm d-flex flex-column align-items-start p-1">
+    <div class="app-card-header p-3">
+      <div class="row justify-content-between align-items-center">
+        <div class="col-auto">
+          <h4 class="app-card-title">Методист</h4>
+        </div><!--//col-->
+      </div><!--//row-->
+    </div><!--//app-card-header-->
+
+
+    <div class="app-card-body px-4 w-100">
+      <div class="item border-bottom py-3">
+        <div class="row justify-content-between align-items-center">
+          <div class="col-auto">
+            <div class="item-label fw-bold">ФИО</div>
+            <div class="item-data">{{ method.methodist.last_name }} {{ method.methodist.first_name }} {{ method.methodist.middle_name }}</div>
+          </div><!--//col-->
+        </div><!--//row-->
+      </div><!--//item-->
+
+      <div class="item border-bottom py-3">
+        <div class="row justify-content-between align-items-center">
+          <div class="col-auto">
+            <div class="item-label fw-bold">Email</div>
+            <div class="item-data">{{ method.methodist.email }}</div>
+          </div><!--//col-->
+        </div><!--//row-->
+      </div><!--//item-->
+
+      <div class="item border-bottom py-3">
+        <div class="row justify-content-between align-items-center">
+          <div class="col-auto">
+            <div class="item-label fw-bold">Муниципалитет</div>
+            <div class="item-data">
+              {{ method.methodist.municipality }}
+            </div>
+          </div><!--//col-->
+        </div><!--//row-->
+      </div><!--//item-->
+    </div><!--//app-card-body-->
+    <div class="app-card-footer p-4 mt-auto">
+      {% if not active_lesson %}
+      <a class="btn app-btn-secondary" href="{% url 'route-signs-create' %}">Пригласить на урок</a>
+      {% endif %}
+    </div><!--//app-card-footer-->
+
+  </div><!--//app-card-->
+</div>
 
 </div>
 
@@ -201,6 +203,13 @@
               <td class="cell">{{sign.get_status_display}}</td>
               <td class="cell"><a href="{% url 'route-signs-update' sign.id %}">Изменить</a></td>
             </tr>
+            {% empty %}
+                <tr><td class="cell">Заявок нет</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
             {% endfor %}
           </tbody>
         </table>
@@ -239,13 +248,13 @@
         <div class="row justify-content-between align-items-center">
           <div class="col-auto">
             <h4 class="app-card-title">Заявки на образовательные программы</h4>
-          </div><!--//col-->
-        </div><!--//row-->
-      </div><!--//app-card-header-->
+          </div>
+        </div>
+      </div>
 
       <div class="app-card-body px-4 w-100">
         <div class="table-responsive">
-          <table class="table app-table-hover mb-0 text-left">
+          <table class="table app-table-hover mb-3 text-left">
             <thead>
               <tr>
                 <th class="cell fw-bold">Заявка</th>
@@ -267,11 +276,19 @@
                 <td class="cell">{{ sign.get_status_display }}</td>
                 <td class="cell"><a href="{% url 'sign' sign.id %}">Подробнее</td>
                 </tr>
+                {% empty %}
+                <tr><td class="cell">Заявок нет</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
                 {% endfor %}
               </tbody>
 
             </table>
-          </div><!--//table-responsive-->
+          </div>
 
           {% if cpage_obj.paginator.num_pages > 1 %}
           <div class="my-3 text-center pagination">

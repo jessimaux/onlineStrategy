@@ -36,8 +36,15 @@
       {% endif %}
 
       {% if moderator %}
-      <li class="nav-item">
-          <a class="nav-link" href="{% url 'moderate-courses' %}">Модерация</a>
+      <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="{% url 'moderate-courses' %}" role="button" data-bs-toggle="dropdown" aria-expanded="false">Модерация</a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="{% url 'moderate-courses' %}">Курсы</a></li>
+            <li><a class="dropdown-item" href="{% url 'moderate-diagnostics' %}">Диагностики</a></li>
+            <li><a class="dropdown-item" href="{% url 'moderate-manuals' %}">Материалы</a></li>
+            <li><a class="dropdown-item" href="{% url 'moderate-profiles' %}">Аккаунты</a></li>
+            <li><a class="dropdown-item" href="{% url 'moderate-methodist' %}">Методисты</a></li>
+          </ul>
       </li>
       {% endif %}
       <li class="nav-item">

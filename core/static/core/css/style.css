@@ -170,6 +170,12 @@ thead, tbody, tfoot, tr, td, th {
 	left: 30%;
 	transform: translate(-50%, -50%);
 	width: 33%;
+	display: flex;
+	flex-direction: column;
+}
+
+.course-btn {
+	width: 50%;
 }
 
 .course-header-footer {
@@ -193,16 +199,11 @@ thead, tbody, tfoot, tr, td, th {
 	margin: 0 40px;
 }
 
-/* other */
 
-.auth-wrapper {
-	border-radius: 32px;
-	background: #fff;
-	box-shadow: 0 2px 8px rgba(0,0,0,.15);
-	width: 100%;
-	max-width: 360px;
-	margin: 50px auto;
-	padding: 30px;
+/* form */
+
+.form-group {
+	margin-bottom: 10px;
 }
 
 .form-control {
@@ -228,6 +229,29 @@ thead, tbody, tfoot, tr, td, th {
 .form-control-static {
 	padding: 10px;
 	margin-bottom: 0;
+}
+
+/* dynamic form */
+.dynamic-form-delete-row{
+	margin-left: 10px;
+}
+
+.inline {
+	display: flex;
+	align-items: center;
+	margin-bottom: 10px;
+}
+
+/* other */
+
+.auth-wrapper {
+	border-radius: 32px;
+	background: #fff;
+	box-shadow: 0 2px 8px rgba(0,0,0,.15);
+	width: 100%;
+	max-width: 360px;
+	margin: 50px auto;
+	padding: 30px;
 }
 
 .btn-block {

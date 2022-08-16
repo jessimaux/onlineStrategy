@@ -23,19 +23,37 @@ class Course(models.Model):
     )
     type = models.CharField(max_length=64, choices=TYPE_CHOICES,blank=True)
     description = models.TextField(blank=True)
-    audience = models.CharField(max_length=256, blank=True)
+    audience = models.TextField(blank=True)
     reason = models.TextField(max_length=512, blank=True)
-    profile = models.CharField(max_length=256, default='all')
-    subject = models.CharField(max_length=256, default='all')
+    PROFILE_CHOICES = (
+        ('ВСЕ', 'Все профили'),
+        ('Предметные', 'Предметные'),
+        ('Метапредметные', 'Метапредметные'),
+        ('Управленческие', 'Управленческие'),
+    )
+    profile = models.CharField(max_length=256, choices=PROFILE_CHOICES, default='ВСЕ')
+
+    SUBJECT_CHOICES = (
+        ('ВСЕ', 'Все предметы'),
+        ('Биология', 'Биология'),
+        ('Математика', 'Математика'),
+    )
+    subject = models.CharField(max_length=256, choices=SUBJECT_CHOICES, default='ВСЕ')
     date_start = models.DateField(blank=True, null=True)
     date_end = models.DateField(blank=True, null=True)
-    duration = models.IntegerField(blank=True, null=True)
+    duration = models.PositiveIntegerField(blank=True, null=True)
     TYPE_EDU_CHOICES = (
         ('Б', 'Бюджет'),
         ('ВБ', 'Внебюджет'),
     )
     type_education = models.CharField(max_length=64, choices=TYPE_EDU_CHOICES,blank=True)
-    certificate = models.CharField(max_length=256, blank=True)
+
+
+    TYPE_CERTIFICATE = (
+        ('УСТ', 'Установленного образца'),
+        ('ДР', 'Другой'),
+    )
+    certificate = models.CharField(max_length=256, choices=TYPE_CERTIFICATE, default='УСТ')
 
     def __str__(self):
         return self.title
@@ -67,7 +85,7 @@ class AccountCourse(models.Model):
 class CourseProgram(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     item = models.CharField(max_length=256, blank=True)
-    duration = models.IntegerField(blank=True, null=True)
+    duration = models.PositiveIntegerField(blank=True, null=True)
 
 
 class CourseSpeakers(models.Model):

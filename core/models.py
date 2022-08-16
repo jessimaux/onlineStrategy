@@ -77,19 +77,19 @@ class MethodistLessonSigns(models.Model):
 
 
 class RouteManual(models.Model):
-    title = models.CharField(max_length=256, blank=True, null=True)
-    description = models.TextField(blank=True, null=True)
+    title = models.CharField(max_length=256, blank=True, null=True, verbose_name='Название')
+    description = models.TextField(blank=True, null=True, verbose_name='Описание')
     TYPE_CHOICES = (
         ('КПК', 'Курс повышения квалификации'),
         ('СЕМ', 'Семинар'),
         ('МЕТ', 'Методичка')
     )
-    type = models.CharField(max_length=32, choices=TYPE_CHOICES, default='КПК')
-    link = models.CharField(max_length=512, blank=True, null=True)
-    mark1 = models.IntegerField(blank=True, null=True)
-    mark2 = models.IntegerField(blank=True, null=True)
-    mark3 = models.IntegerField(blank=True, null=True)
-    mark4 = models.IntegerField(blank=True, null=True)
+    type = models.CharField(max_length=32, choices=TYPE_CHOICES, default='КПК', verbose_name='Тип')
+    link = models.CharField(max_length=512, blank=True, null=True, verbose_name='Доступность')
+    mark1 = models.PositiveIntegerField(blank=True, null=True, verbose_name='Методические компетенции')
+    mark2 = models.PositiveIntegerField(blank=True, null=True, verbose_name='Функциональная грамотность')
+    mark3 = models.PositiveIntegerField(blank=True, null=True, verbose_name='Психолого-педагогические компетенции')
+    mark4 = models.PositiveIntegerField(blank=True, null=True, verbose_name='Предметные компетенции')
 
 
 class Route(models.Model):

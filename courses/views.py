@@ -112,8 +112,6 @@ class CourseUpdateView(LoginRequiredMixin, ModeratorPermissionsMixin, UpdateView
             return self.form_invalid(program_formset, speaker_formset, form)
 
     def form_valid(self, program_formset, speaker_formset, form):
-        form.save()
-        print(2)
         for _form in program_formset:
             obj = _form.save(commit=False)
             obj.course_id = self.kwargs['pk']
@@ -148,50 +146,6 @@ class CourseView(LoginRequiredMixin, TemplateView):
 class CourseDeleteView(LoginRequiredMixin, ModeratorPermissionsMixin, DeleteView):
     model = Course
     success_url = reverse_lazy('moderate-courses')
-
-
-class AccountCourseListView(LoginRequiredMixin, ModeratorPermissionsMixin, FormView):
-    template_name = 'courses/course_view.html'
-    form_class = AccountCourseInListForm
-
-    def get_context_data(self, **kwargs):
-        context = super(AccountCourseListView, self).get_context_data()
-        object_list = AccountCourse.objects.filter(course_id=self.kwargs['pk'])
-
-        query = self.request.GET.get('q')
-        if query:
-            object_list = object_list.filter(Q(account__last_name__icontains=query) |
-                                             Q(account__first_name__icontains=query) |
-                                             Q(account__middle_name__icontains=query) |
-                                             Q(account__subject_of_country__icontains=query) |
-                                             Q(account__municipality__icontains=query)
-                                             )
-
-        formset = SignFormSet(queryset=object_list)
-        context['management_form'] = formset.management_form
-        context['object_list'] = zip(object_list, formset)
-        context['course_title'] = Course.objects.get(id=self.kwargs['pk']).title
-        return context
-
-    def post(self, request, *args, **kwargs):
-        formset = SignFormSet(request.POST)
-        if formset.is_valid():
-            return self.form_valid(formset)
-        else:
-            return super(AccountCourseListView, self).get(request, *args, **kwargs)
-
-    def form_valid(self, formset):
-        for _form in formset:
-            obj = _form.save(commit=False)
-            event = Events.objects.create(user=Account(id=self.request.user.pk),
-                                          content_object=AccountCourse(id=obj.id),
-                                          event_type='EDIT')
-            e_fields = EventEditedFields.objects.create(event=event,
-                                                        fields=list(obj.tracker.changed().keys()),
-                                                        prev=obj.tracker.previous('status'),
-                                                        current=obj.get_status_display())
-            obj.save()
-        return super(AccountCourseListView, self).get(self.request)
 
 
 class CreateAccountCourseView(LoginRequiredMixin, CreateView):

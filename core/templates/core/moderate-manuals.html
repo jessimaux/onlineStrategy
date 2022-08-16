@@ -4,63 +4,65 @@
 {% block title %}Курсы{% endblock %}
 {% block page %}
 <div class="container">
-  <h2 class="my-3">Образовательный маршрут</h2>
+  <div class="row g-4 mb-4">
+    <div class="col-12">
+      <div class="app-card app-card-stats-table h-100 shadow-sm">
+        <div class="app-card-header p-3">
+          <div class="row justify-content-between align-items-center">
+            <div class="col-8">
+              <h4 class="app-card-title">Модерация материалов</h4>
+            </div>
+            <div class="col-4">
+              <form class="float-end" method='GET'>
+                <input class="form-control"  placeholder="Поиск" type='text' name='q' value='{{ request.GET.q }}'>
+              </form>
+            </div>
+          </div>
+        </div>
 
-  <nav class="nav nav-pills flex-column flex-sm-row">
-    <a class="text-sm-center nav-link" aria-current="page" href="{% url 'moderate-courses' %}">Курсы</a>
-    <a class="text-sm-center nav-link active" aria-current="page" href="{% url 'moderate-manuals' %}">Материалы</a>
-    <a class="text-sm-center nav-link" href="{% url 'moderate-profiles' %}">Аккаунты</a>
-    <a class="text-sm-center nav-link" href="{% url 'moderate-methodist' %}">Методисты</a>
-    <a class="text-sm-center nav-link" href="#">Статистика</a>
-    <a class="text-sm-center nav-link" href="#">Отчеты</a>
-  </nav>
+        <div class="app-card-body px-4 w-100">
+          <div class="table-responsive">
+            <table class="table app-table-hover mb-3 text-left">
+              <thead>
+                <tr>
+                  <th class="cell fw-bold">Наименование</th>
+                  <th class="cell fw-bold">Автор</th>
+                  <th class="cell fw-bold">Описание</th>
+                  <th class="cell fw-bold">Доступность</th>
+                  <th class="cell fw-bold">Операции</th>
+                </tr>
+              </thead>
 
-<div class="my-3 course-app">
-    <div class="row">
-      <div class="col-md-8 col-6">
-        <a href="{% url 'moderate-manuals-create' %}" class="btn btn-primary text-white"><i class="fas fa-plus"></i> Создать</a>
+              <tbody>
+                {% for item in object_list %}
+                <tr>
+                  <td class="cell">{{ item.title }}</td>
+                  <td class="cell">{{ item.author }}</td>
+                  <td class="cell">{{ item.description }}</td>
+                  <td class="cell">{{ item.link }}</td>
+                  <td class="cell">
+                    <a href="{% url 'moderate-manuals-update' item.id %}" class="btn btn-primary text-white"><i class="far fa-edit"></i></a>
+                    <form action="{% url 'moderate-manuals-delete' pk=item.id %}" method="POST" style="display: inline;" onsubmit="window.mytest()">
+                      {% csrf_token %}
+                      <button type="submit" value="Delete" class="btn btn-primary"><i class="far fa-trash-alt"></i></button>
+                    </form>
+                    <script type="text/javascript">window.mytest = function() { var isValid = confirm('Вы уверены, что хотите удалить данную программу?');if (!isValid) { event.preventDefault();}}</script>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr><td class="cell">Материалов нет</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                {% endfor %}
+                {% include 'core/pagination.html' %}
+              </tbody>
+            </table>
+          </div>
+          <a href="{% url 'moderate-manuals-create' %}" class="btn btn-primary text-white mb-3"><i class="fas fa-plus"></i></a>
+        </div>
+
       </div>
-
-      <div class="col-md-4 col-6">
-        <form class="float-end" method='GET'>
-          <input class="form-control"  placeholder="Поиск" type='text' name='q' value='{{ request.GET.q }}'>
-        </form>
-      </div>
-
-    </div>
-  </div>
-
-  <div class="sign-table d-none d-sm-block d-block d-sm-none d-md-block">
-    <div class="row sign-row">
-      <div class="col-md-2">Наименование</div>
-      <div class="col-md-2">Автор</div>
-      <div class="col-md-4">Описание</div>
-      <div class="col-md-2">Доступность</div>
-      <div class="col-md-2">Операции</div>
-    </div>
-  </div>
-
-  {% for item in object_list %}
-  <div class="sign-table__item">
-    <div class="row">
-      <div class="col-md-2">{{ item.title }}</div>
-      <div class="col-md-2">{{ item.author }}</div>
-      <div class="col-md-4">{{ item.description }}</div>
-      <div class="col-md-2">{{ item.link }}</div>
-      <div class="col-md-2 text-end">
-        <a href="{% url 'moderate-manuals-update' item.id %}" class="btn btn-primary text-white"><i class="far fa-edit"></i></a>
-        <form action="{% url 'moderate-manuals-delete' pk=item.id %}" method="POST" style="display: inline;" onsubmit="window.mytest()">
-          {% csrf_token %}
-          <button type="submit" value="Delete" class="btn btn-primary"><i class="far fa-trash-alt"></i></button>
-        </form>
-        <script type="text/javascript">window.mytest = function() { var isValid = confirm('Вы уверены, что хотите удалить данную программу?');if (!isValid) { event.preventDefault();}}</script>
-      </div>
-    </div>
-  </div>
-  {% empty %}
-  <p>Материалов нет</p>
-  {% endfor %}
-
-
-</div>
-{% endblock %}
+      {% endblock %}

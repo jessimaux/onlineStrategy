@@ -11,7 +11,7 @@
                 <div class="course-text">
                     <div class="course-data mb-3">{{ form.date_start|date:"d.m.Y" }} - {{ form.date_end|date:"d.m.Y" }}</div>
                     <h3 class="course-title mb-3">{{ form.title }}</h3>
-                    <a href="{% url 'course-signup' form.id %}" class="btn btn-primary text-white">{{ is_registrated|yesno:"Перейти к заявке,Записаться," }}</a>
+                    <a href="{% url 'course-signup' form.id %}" class="btn btn-primary course-btn text-white">{{ is_registrated|yesno:"Перейти к заявке,Записаться," }}</a>
                 </div>
 
                 <div class="course-header-footer text-center p-3">
@@ -23,11 +23,11 @@
 
 
             <div class="course-nav mb-3">
-                <div class="course-data"><a href="#description">Чему научитесь</a></div>
+                <div class="course-data"><a href="#speakers">Спикеры</a></div>
                 <div class="course-separator"></div>
                 <div class="course-data"><a href="#program">Программа</a></div>
                 <div class="course-separator"></div>
-                <div class="course-data"><a href="#speakers">Спикеры</a></div>
+                <div class="course-data"><a href="#description">Чему научитесь</a></div>
             </div>
 
             <div class="app-card p-1 mb-3" id='description'>
@@ -47,7 +47,7 @@
         </div>
     </div>
 
-    <div class="app-card p-1 mb-3" id='description'>
+    <div class="app-card p-1 mb-3">
         <div class="app-card-header p-3">
             <div class="row justify-content-between align-items-center">
               <div class="col-auto">
@@ -62,7 +62,7 @@
   </div>
 </div>
 
-<div class="app-card p-1 mb-3" id='description'>
+<div class="app-card p-1 mb-3">
     <div class="app-card-header p-3">
         <div class="row justify-content-between align-items-center">
           <div class="col-auto">
@@ -78,7 +78,7 @@
 </div>
 </div>
 
-<div class="app-card p-1 mb-3" id='description'>
+<div class="app-card p-1 mb-3" id='program'>
     <div class="app-card-header p-3">
         <div class="row justify-content-between align-items-center">
           <div class="col-auto">
@@ -98,18 +98,18 @@
             </h2>
             <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse" aria-labelledby="heading{{ forloop.counter }}" data-bs-parent="#accordionExample">
               <div class="accordion-body">
+                <p>Продолжительность: {{ item.duration }}</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
 
-              </div>
-          </div>
-      </div>
-      {% endfor %}
-
-  </div>
 </div>
 </div>
 </div>
+</div>
 
-<div class="app-card p-1 mb-3" id='description'>
+<div class="app-card p-1 mb-3" id='speakers'>
     <div class="app-card-header p-3">
         <div class="row justify-content-between align-items-center">
           <div class="col-auto">

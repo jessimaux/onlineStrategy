@@ -4,17 +4,26 @@
 {% block title %}Создание мероприятия{% endblock %}
 {% block page %}
 <div class="container">
-    <h3 class="my-3">Новый курс</h3>
-    {% if form.non_field_errors %}
-    <div class="alert alert-danger">
-        {{ form.non_field_errors }}
+    <div class="row g-4 mb-4">
+        <div class="col-12">
+          <div class="app-card app-card-stats-table h-100 shadow-sm">
+            <div class="app-card-header p-3 mb-4">
+              <div class="row justify-content-between align-items-center">
+                <div class="col-8">
+                  <h4 class="app-card-title">Новый курс</h4>
+              </div>
+
+              {% if form.non_field_errors %}
+              <div class="alert alert-danger">
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+        </div>
     </div>
-    {% endif %}
 
-    <form method="post">
-        {% csrf_token %}
-
-        <div class="bg-white rounded shadow-sm p-3">
+    <div class="app-card-body px-4 w-100">
+        <form method="post">
+            {% csrf_token %}
             <div class="row">
                 <div class="col-md-4">
                     <div class="form-group form-group-required">
@@ -59,7 +68,7 @@
                 <div class="col-md-4">
                     <div class="form-group form-group-required">
                         <label for="date_start">Начало обучения</label>
-                        {{ form.date_start|attr:"class:form-control"|attr:"required" }}
+                        {{ form.date_start|attr:"class:form-control"|attr:"type:date"|attr:"required" }}
                         {% for error in form.date_start.errors %}
                         <p class="my-2 alert alert-danger">{{ error }}</p>
                         {% endfor %}
@@ -69,7 +78,7 @@
                 <div class="col-md-4">
                     <div class="form-group form-group-required">
                         <label for="date_end">Конец обучения</label>
-                        {{ form.date_end|attr:"class:form-control"|attr:"required" }}
+                        {{ form.date_end|attr:"class:form-control"|attr:"type:date"|attr:"required" }}
                         {% for error in form.date_end.errors %}
                         <p class="my-2 alert alert-danger">{{ error }}</p>
                         {% endfor %}
@@ -107,6 +116,16 @@
                 </div>
 
                 <div class="col-md-12">
+                    <div class="form-group form-group-required">
+                        <label for="audience">Кому подойдут эти курсы</label>
+                        {{ form.audience|attr:"class:form-control"|attr:"required" }}
+                        {% for error in form.audience.errors %}
+                        <p class="my-2 alert alert-danger">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="col-md-12">
                     <div class="form-group">
                         <label for="reason">Программа</label>
                         {{ programformset.management_form }}
@@ -126,9 +145,9 @@
                                 </div>
                             </div>
                         </div><!-- stores empty form for javascript -->
-                        
+
                         <div id="program-forms" class="form-group"></div><!-- where the generated forms go -->
-                        
+
                         <input type="button" id="add_more_program" class="btn btn-primary" value="Добавить" />
 
                         <script>
@@ -147,84 +166,72 @@
 
             <div class="col-md-12">
                 <div class="form-group">
-                        <label for="reason">Спикеры</label>
-                        {{ speakerformset.management_form }}
-                        <div style="display:none;" id="speaker_form_template">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>ФИО</label>
-                                        {{ speakerformset.empty_form.name|attr:"class:form-control" }}
-                                    </div>
+                    <label for="reason">Спикеры</label>
+                    {{ speakerformset.management_form }}
+                    <div style="display:none;" id="speaker_form_template">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>ФИО</label>
+                                    {{ speakerformset.empty_form.name|attr:"class:form-control" }}
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="reason">Дополнительные сведения</label>
-                                        {{ speakerformset.empty_form.description|attr:"class:form-control" }}
-                                    </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="reason">Дополнительные сведения</label>
+                                    {{ speakerformset.empty_form.description|attr:"class:form-control" }}
                                 </div>
                             </div>
                         </div>
-                        
-                        <div id="speaker-forms" class="form-group"></div>
-                        
-                        <input type="button" id="add_more_speaker" class="btn btn-primary" value="Добавить" />
+                    </div>
 
-                        <script>
-                           $('#add_more_speaker').click(function () {
-                            let total_form = $('#id_speaker_formset-TOTAL_FORMS');
-                            let form_idx = total_form.val();
+                    <div id="speaker-forms" class="form-group"></div>
 
-                            $('#speaker-forms').append($('#speaker_form_template').html().replace(/__prefix__/g, form_idx));
-                            $('html, body').animate({scrollTop:999000}, 400);
-                            total_form.val(parseInt(form_idx)+1);
-                        });
-                    </script>
-                </div>
+                    <input type="button" id="add_more_speaker" class="btn btn-primary" value="Добавить" />
+
+                    <script>
+                       $('#add_more_speaker').click(function () {
+                        let total_form = $('#id_speaker_formset-TOTAL_FORMS');
+                        let form_idx = total_form.val();
+
+                        $('#speaker-forms').append($('#speaker_form_template').html().replace(/__prefix__/g, form_idx));
+                        $('html, body').animate({scrollTop:999000}, 400);
+                        total_form.val(parseInt(form_idx)+1);
+                    });
+                </script>
             </div>
-
-
-            <div class="col-md-3">
-                <div class="form-group form-group-required">
-                    <label for="audience">Кому подойдут эти курсы</label>
-                    {{ form.audience|attr:"class:form-control"|attr:"required" }}
-                    {% for error in form.audience.errors %}
-                    <p class="my-2 alert alert-danger">{{ error }}</p>
-                    {% endfor %}
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="form-group form-group-required">
-                    <label for="profile">Профиль</label>
-                    {{ form.profile|attr:"class:form-control"|attr:"required" }}
-                    {% for error in form.profile.errors %}
-                    <p class="my-2 alert alert-danger">{{ error }}</p>
-                    {% endfor %}
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="form-group form-group-required">
-                    <label for="subject">Предметная область</label>
-                    {{ form.subject|attr:"class:form-control"|attr:"required" }}
-                    {% for error in form.subject.errors %}
-                    <p class="my-2 alert alert-danger">{{ error }}</p>
-                    {% endfor %}
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="form-group form-group-required">
-                    <label for="certificate">Тип сертификата</label>
-                    {{ form.certificate|attr:"class:form-select"|attr:"required" }}
-                    {% for error in form.certificate.errors %}
-                    <p class="my-2 alert alert-danger">{{ error }}</p>
-                    {% endfor %}
-                </div>
-            </div>
-
         </div>
+
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="profile">Профиль</label>
+                {{ form.profile|attr:"class:form-select" }}
+                {% for error in form.profile.errors %}
+                <p class="my-2 alert alert-danger">{{ error }}</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="subject">Предметная область</label>
+                {{ form.subject|attr:"class:form-select" }}
+                {% for error in form.subject.errors %}
+                <p class="my-2 alert alert-danger">{{ error }}</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="certificate">Тип сертификата</label>
+                {{ form.certificate|attr:"class:form-select"}}
+                {% for error in form.certificate.errors %}
+                <p class="my-2 alert alert-danger">{{ error }}</p>
+                {% endfor %}
+            </div>
+        </div>
+
     </div>
 
     <div class="col-md-3 offset-md-9">
@@ -232,6 +239,10 @@
     </div>
 
 </form>
+</div>
+</div>
+</div>
+</div>
 </div>
 
 

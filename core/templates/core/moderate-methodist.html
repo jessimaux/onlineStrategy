@@ -4,48 +4,62 @@
 {% block title %}Курсы{% endblock %}
 {% block page %}
 <div class="container">
-  <h2 class="my-3">Образовательный маршрут</h2>
+  <div class="row g-4 mb-4">
+    <div class="col-12">
+      <div class="app-card app-card-stats-table h-100 shadow-sm">
+        <div class="app-card-header p-3 mb-4">
+          <div class="row justify-content-between align-items-center">
+            <div class="col-8">
+              <h4 class="app-card-title">Модерация методических работников</h4>
+            </div>
+          </div>
+        </div>
 
-  <nav class="nav nav-pills flex-column flex-sm-row">
-    <a class="text-sm-center nav-link" aria-current="page" href="{% url 'moderate-courses' %}">Курсы</a>
-    <a class="text-sm-center nav-link" aria-current="page" href="{% url 'moderate-manuals' %}">Материалы</a>
-    <a class="text-sm-center nav-link" href="{% url 'moderate-profiles' %}">Аккаунты</a>
-    <a class="text-sm-center nav-link active" href="{% url 'moderate-methodist' %}">Методисты</a>
-    <a class="text-sm-center nav-link" href="#">Статистика</a>
-    <a class="text-sm-center nav-link" href="#">Отчеты</a>
-  </nav>
+        <div class="app-card-body px-4 w-100">
+          <form action="" method="post">
+            {% csrf_token %}
 
-  <form action="" method="post">
-    {% csrf_token %}
+            {% for item, formset in formsets %}
+            <div class="row mb-2">
+              {{ formset.management_form }}
+              {{ formset.non_form_errors }}
 
-    {% for formset in formsets %}
-     {{ formset.management_form }}
-     {{ formset.non_form_errors }}
+              <div class="col-2">{{ item }}:</div>
+              {% for form in formset %}
+              {{ form.non_field_errors }}
+              {{ form.errors }}
+              <div class="col-2">
+                <div class="inline {{ formset.prefix }}">
+                  {% for hidden in form.hidden_fields %}
+                  {{ hidden }}
+                  {% endfor %}
+                  {{form.method|attr:"class:form-select"}}
+                  {{ form.DELETE }}
+                </div>
+              </div>
+              {% endfor %}
 
-     {% for form in formset %}
-      {{ form.non_field_errors }}
-      {{ form.errors }}
-     <div class="inline {{ formset.prefix }}">
-      {% for hidden in form.hidden_fields %}
-        {{ hidden }}
-      {% endfor %}
-      {{ form.method|attr:"class:form-select" }}
-      {{ form.DELETE }}
-     </div>
-     {% endfor %}
-     <script type="text/javascript">
-  $(function() {
-    $(".inline.{{ formset.prefix }}").formset({
+              <script type="text/javascript">
+                $(function() {
+                  $(".inline.{{ formset.prefix }}").formset({
             prefix: "{{ formset.prefix }}", // The form prefix for your django formset
           })
-  });
-</script>
-    {% endfor %}
+                });
+              </script>
+            </div>
+            {% endfor %}
 
-    <button class="mb-4 btn btn-primary btn-block btn-lg mt-3" type="submit">Сохранить</button>
+            <div class="row">
+              <div class="col-2 offset-lg-10">
+                <button class="mb-4 btn btn-primary btn-block btn-lg mt-3" type="submit">Сохранить</button>
+              </div>
+            </div>
 
-  </form>
-
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}
 

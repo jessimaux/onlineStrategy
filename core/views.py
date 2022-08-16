@@ -14,7 +14,9 @@ from .models import Question, Diagnostic, DiagnosticResult, Methodist2Teacher, M
 
 from django.db.models import Q
 
-from .forms import QuestionFormSet, OrderingForm, MethodMunicipalityInlineFormset
+from .forms import QuestionFormSet, OrderingForm, MethodMunicipalityInlineFormset, QuestionCreateFormset
+from courses.forms import AccountCourseInListForm, SignFormSet
+from accounts.forms import AccountUpdateForm
 
 from django.urls import reverse_lazy
 from django.contrib import messages
@@ -323,22 +325,54 @@ class ModerateCoursesListView(LoginRequiredMixin, ModeratorPermissionsMixin, Lis
             return super(ModerateCoursesListView, self).get_queryset()
 
 
-class ModerateAccountView(LoginRequiredMixin, ModeratorPermissionsMixin, TemplateView):
-    template_name = 'core/moderate-profile-card.html'
+class AccountCourseListView(LoginRequiredMixin, ModeratorPermissionsMixin, FormView):
+    template_name = 'core/moderate-courses-signs.html'
+    form_class = AccountCourseInListForm
 
     def get_context_data(self, **kwargs):
-        context = super(ModerateAccountView, self).get_context_data()
-        context['profile'] = Account.objects.filter(id=self.kwargs['pk']).values('first_name',
-                                                                                 'last_name',
-                                                                                 'middle_name',
-                                                                                 'email',
-                                                                                 'date_of_birth',
-                                                                                 'work',
-                                                                                 'municipality',
-                                                                                 'phone_number',
-                                                                                 'subject_of_country')[0]
-        context['signs'] = AccountCourse.objects.filter(account_id=self.kwargs['pk'])
+        context = super(AccountCourseListView, self).get_context_data()
+        object_list = AccountCourse.objects.filter(course_id=self.kwargs['pk'])
+
+        query = self.request.GET.get('q')
+        if query:
+            object_list = object_list.filter(Q(account__last_name__icontains=query) |
+                                             Q(account__first_name__icontains=query) |
+                                             Q(account__middle_name__icontains=query) |
+                                             Q(account__subject_of_country__icontains=query) |
+                                             Q(account__municipality__icontains=query)
+                                             )
+
+        formset = SignFormSet(queryset=object_list)
+        context['management_form'] = formset.management_form
+        context['object_list'] = zip(object_list, formset)
+        context['course_title'] = Course.objects.get(id=self.kwargs['pk']).title
         return context
+
+    def post(self, request, *args, **kwargs):
+        formset = SignFormSet(request.POST)
+        if formset.is_valid():
+            return self.form_valid(formset)
+        else:
+            return super(AccountCourseListView, self).get(request, *args, **kwargs)
+
+    def form_valid(self, formset):
+        for _form in formset:
+            obj = _form.save(commit=False)
+            event = Events.objects.create(user=Account(id=self.request.user.pk),
+                                          content_object=AccountCourse(id=obj.id),
+                                          event_type='EDIT')
+            # e_fields = EventEditedFields.objects.create(event=event,
+            #                                             fields=list(obj.tracker.changed().keys()),
+            #                                             prev=obj.tracker.previous('status'),
+            #                                             current=obj.get_status_display())
+            obj.save()
+        return super(AccountCourseListView, self).get(self.request)
+
+
+class ModerateAccountView(LoginRequiredMixin, ModeratorPermissionsMixin, UpdateView):
+    model = Account
+    template_name = 'core/moderate-profile-card.html'
+    form_class = AccountUpdateForm
 
 
 class ModerateManualsListView(LoginRequiredMixin, ModeratorPermissionsMixin, ListView):
@@ -466,12 +500,14 @@ class ModerateMethodistFormView(LoginRequiredMixin, ModeratorPermissionsMixin, T
 
     def get_context_data(self, **kwargs):
         context = super(ModerateMethodistFormView, self).get_context_data()
-
-        context['formsets'] = list()
+        temp = list()
+        temp_mun = list()
 
         for i in range(len(self.mun)):
-            context['formsets'].append(MethodMunicipalityInlineFormset(instance=self.mun[i], prefix='mun_formset-'+str(i)))
+            temp.append(MethodMunicipalityInlineFormset(instance=self.mun[i], prefix='mun_formset-'+str(i)))
+            temp_mun.append(self.mun[i].name)
 
+        context['formsets'] = zip(temp_mun, temp)
         return context
 
     def post(self, *args, **kwargs):
@@ -486,10 +522,35 @@ class ModerateMethodistFormView(LoginRequiredMixin, ModeratorPermissionsMixin, T
 
                 for form in formset:
                     form_obj = form.save(commit=False)
-                    form_obj.save()
+                    if form_obj.method_id:
+                        form_obj.save()
 
                 for obj in formset.deleted_objects:
-                    print(formset.deleted_objects)
                     obj.delete()
 
         return HttpResponseRedirect(reverse_lazy('moderate-methodist'))
+
+
+class ModerateDiagnosticsListView(LoginRequiredMixin, ModeratorPermissionsMixin, ListView):
+    template_name = 'core/moderate-diagnostics.html'
+    context_object_name = 'object_list'
+    model = Diagnostic
+    paginate_by = 25
+
+    def get_queryset(self):
+        query = self.request.GET.get('q')
+        if query:
+            object_list = self.model.objects.filter(Q(title__icontains=query))
+            return object_list
+        else:
+            return super().get_queryset()
+
+
+class ModerateDiagnosticsCreateView(LoginRequiredMixin, ModeratorPermissionsMixin, TemplateView):
+    template_name = 'core/moderate-diagnostics-create.html'
+
+    def get_context_data(self):
+        context = super(ModerateDiagnosticsCreateView, self).get_context_data()
+        context['formset'] = QuestionCreateFormset()
+
+        return context

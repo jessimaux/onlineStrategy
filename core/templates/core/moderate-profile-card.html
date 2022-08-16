@@ -1,19 +1,421 @@
 {% extends 'core/page-layout.html' %}
 {% load widget_tweaks %}
 {% load static %}
-{% block title %}Карточка пользователя{% endblock %}
+{% block title %}Аккаунт{% endblock %}
 {% block page %}
 <div class="container">
-  <h2 class="my-3">Карточка пользователя</h2>
-  {% for item in profile.values %}
-    {{ item }}
-  {% endfor %}
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="app-card p-1 mb-3" id='description'>
+            <div class="app-card-header p-3">
+                <div class="row justify-content-between align-items-center">
+                  <div class="col-auto">
+                    <h4>Личные данные</h4>
+                </div>
+            </div>
+        </div>
+        <div class="app-card-body p-3">
+            <div class="row">
 
-  <h4 class="my-3">Заявки</h4>
-  {% for item in signs %}
-    {{ item.course.title }}
-    {{ item.status }}
-    <br>
-  {% endfor %}
+                <div class="col-md-4">
+                    <div class="form-group form-group-required">
+                        <label for="email">E-mail</label>
+                        {{ form.email|attr:"class:form-control"|attr:"required"|attr:"readonly" }}
+                        {% for error in form.email.errors %}
+                        <p class="my-2 alert alert-danger">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group form-group-required">
+                        <label for="password">Пароль</label>
+                        <a href="{% url 'password_change' %}" class="form-control">Сменить пароль</a>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="image">Фотография</label>
+                        <input type="file" name="image" accept="image/*" class="form-control" id="id_image">
+                        {% for error in form.image.errors %}
+                        <p class="my-2 alert alert-danger">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group form-group-required">
+                        <label for="last_name">Фамилия</label>
+                        {{ form.last_name|attr:"class:form-control"|attr:"required"|attr:"value" }}
+                        {% for error in form.last_name.errors %}
+                        <p class="my-2 alert alert-danger">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group form-group-required">
+                        <label for="first_name">Имя</label>
+                        {{ form.first_name|attr:"class:form-control"|attr:"required"|attr:"value" }}
+                        {% for error in form.first_name.errors %}
+                        <p class="my-2 alert alert-danger">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="middle_name">Отчество</label>
+                        {{ form.middle_name|attr:"class:form-control"|attr:"value" }}
+                        {% for error in form.middle_name.errors %}
+                        <p class="my-2 alert alert-danger">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group form-group-required">
+                        <label for="gender">Пол</label>
+                        {{ form.gender|attr:"class:form-select"|attr:"required"|attr:"value" }}
+                        {% for error in form.gender.errors %}
+                        <p class="my-2 alert alert-danger">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group form-group-required">
+                        <label for="date_of_birth">Дата рождения</label>
+                        {{ form.date_of_birth|attr:"class:form-control"|attr:"type:date"|attr:"required"|attr:"value" }}
+                        {% for error in form.date_of_birth.errors %}
+                        <p class="my-2 alert alert-danger">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="national">Гражданство</label>
+                        {{ form.national|attr:"class:form-select"|attr:"value" }}
+                        {% for error in form.national.errors %}
+                        <p class="my-2 alert alert-danger">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="municipality">Муниципальное образование</label>
+                        {{ form.municipality|attr:"class:form-select"|attr:"value" }}
+                        {% for error in form.municipality.errors %}
+                        <p class="my-2 alert alert-danger">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="phone_number">Контактный телефон</label>
+                        {{ form.phone_number|attr:"class:form-control"|attr:"value" }}
+                        {% for error in form.phone_number.errors %}
+                        <p class="my-2 alert alert-danger">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div class="app-card p-1 mb-3" id='description'>
+        <div class="app-card-header p-3">
+            <div class="row justify-content-between align-items-center">
+              <div class="col-auto">
+                <h4>Образование</h4>
+            </div>
+        </div>
+    </div>
+    <div class="app-card-body p-3">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="education_level">Уровень образования</label>
+                    {{ form.education_level|attr:"class:form-select"|attr:"value" }}
+                    {% for error in form.education_level.errors %}
+                    <p class="my-2 alert alert-danger">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="education_qualify">Квалификация</label>
+                    {{ form.education_qualify|attr:"class:form-control"|attr:"value" }}
+                    {% for error in form.education_qualify.errors %}
+                    <p class="my-2 alert alert-danger">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="education_pow">Ученая степень</label>
+                    {{ form.education_pow|attr:"class:form-select"|attr:"value" }}
+                    {% for error in form.education_pow.errors %}
+                    <p class="my-2 alert alert-danger">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="education_document_serial">Серия документа</label>
+                    {{ form.education_document_serial|attr:"class:form-control"|attr:"value" }}
+                    {% for error in form.education_document_serial.errors %}
+                    <p class="my-2 alert alert-danger">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="education_document_number">Номер документа</label>
+                    {{ form.education_document_number|attr:"class:form-control"|attr:"value" }}
+                    {% for error in form.education_document_number.errors %}
+                    <p class="my-2 alert alert-danger">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="education_document_number">Ученое звание</label>
+                    {{ form.education_rank|attr:"class:form-select"|attr:"value" }}
+                    {% for error in form.education_rank.errors %}
+                    <p class="my-2 alert alert-danger">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="education_document_reg_number">Регистрационный номер</label>
+                    {{ form.education_document_reg_number|attr:"class:form-control"|attr:"value" }}
+                    {% for error in form.education_document_reg_number.errors %}
+                    <p class="my-2 alert alert-danger">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="education_document_date">Дата выдачи</label>
+                    {{ form.education_document_date|attr:"class:form-control"|attr:"value" }}
+                    {% for error in form.education_document_date.errors %}
+                    <p class="my-2 alert alert-danger">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <p class="mb-2">Если ФИО в дипломе отличаются от ваших, заполните поля ниже</p>
+        <div class="row">
+            <div class="col-md-4">
+             <div class="form-group">
+                <label for="education_document_second_name">Фамилия</label>
+                {{ form.education_document_second_name|attr:"class:form-control"|attr:"value" }}
+                {% for error in form.education_document_second_name.errors %}
+                <p class="my-2 alert alert-danger">{{ error }}</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="education_document_first_name">Имя</label>
+                {{ form.education_document_first_name|attr:"class:form-control"|attr:"value" }}
+                {% for error in form.education_document_first_name.errors %}
+                <p class="my-2 alert alert-danger">{{ error }}</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="education_document_middle_name">Отчество</label>
+                {{ form.education_document_middle_name|attr:"class:form-control"|attr:"value" }}
+                {% for error in form.education_document_middle_name.errors %}
+                <p class="my-2 alert alert-danger">{{ error }}</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+
+<div class="app-card p-1 mb-3" id='description'>
+    <div class="app-card-header p-3">
+        <div class="row justify-content-between align-items-center">
+          <div class="col-auto">
+            <h4>Работа</h4>
+        </div>
+    </div>
+</div>
+<div class="app-card-body p-3">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="work">Место работы</label>
+                {{ form.work|attr:"class:form-control"|attr:"value" }}
+                {% for error in form.work.errors %}
+                <p class="my-2 alert alert-danger">{{ error }}</p>
+                {% endfor %}
+
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+                <link href="https://cdn.jsdelivr.net/npm/suggestions-jquery@21.12.0/dist/css/suggestions.min.css" rel="stylesheet" />
+                <script src="https://cdn.jsdelivr.net/npm/suggestions-jquery@21.12.0/dist/js/jquery.suggestions.min.js"></script>
+
+                <script>
+                    $("#id_work").suggestions({
+                        token: "f0f847192acca32cc7a3a8f0a2251a5134534f58",
+                        type: "PARTY",
+                        /* Вызывается, когда пользователь выбирает одну из подсказок */
+                        onSelect: function(suggestion) {
+                            console.log(suggestion);
+                        },
+                        onSelectNothing: function() {
+                            $("#id_work").val('');
+                        }
+                    });
+                </script>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="work_pos">Должность</label>
+                {{ form.work_pos|attr:"class:form-control"|attr:"value" }}
+                {% for error in form.work_pos.errors %}
+                <p class="my-2 alert alert-danger">{{ error }}</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="col-md-2">
+            <div class="form-group">
+                <label for="work_exp">Опыт работы</label>
+                {{ form.work_exp|attr:"class:form-control"|attr:"value" }}
+                {% for error in form.work_exp.errors %}
+                <p class="my-2 alert alert-danger">{{ error }}</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="col-md-2">
+            <div class="form-group">
+                <label for="work_edu_exp">Общий педстаж</label>
+                {{ form.work_edu_exp|attr:"class:form-control"|attr:"value" }}
+                {% for error in form.work_edu_exp.errors %}
+                <p class="my-2 alert alert-danger">{{ error }}</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<div class="app-card p-1 mb-3" id='description'>
+    <div class="app-card-header p-3">
+        <div class="row justify-content-between align-items-center">
+          <div class="col-auto">
+            <h4>Документы</h4>
+        </div>
+    </div>
+</div>
+<div class="app-card-body p-3">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="document_serial">Серия документа</label>
+                {{ form.document_serial|attr:"class:form-control"|attr:"value" }}
+                {% for error in form.document_serial.errors %}
+                <p class="my-2 alert alert-danger">{{ error }}</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="document_number">Номер документа</label>
+                {{ form.document_number|attr:"class:form-control"|attr:"value" }}
+                {% for error in form.document_number.errors %}
+                <p class="my-2 alert alert-danger">{{ error }}</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="document_department">Место выдачи</label>
+                {{ form.document_department|attr:"class:form-control"|attr:"value" }}
+                {% for error in form.document_department.errors %}
+                <p class="my-2 alert alert-danger">{{ error }}</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="document_date">Дата выдачи</label>
+                {{ form.document_date|attr:"class:form-control"|attr:"type:date"|attr:"value" }}
+                {% for error in form.document_date.errors %}
+                <p class="my-2 alert alert-danger">{{ error }}</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="document_code_department">Код подразделения</label>
+                {{ form.document_code_department|attr:"class:form-control"|attr:"value" }}
+                {% for error in form.document_code_department.errors %}
+                <p class="my-2 alert alert-danger">{{ error }}</p>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="document_place_birth">Место рождения</label>
+                {{ form.document_place_birth|attr:"class:form-control"|attr:"value" }}
+                {% for error in form.document_place_birth.errors %}
+                <p class="my-2 alert alert-danger">{{ error }}</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<div class="col-md-3 offset-md-9">
+    <button class="my-3 btn btn-primary btn-block btn-lg" type="submit">Сохранить изменения</button>
+</div>
+
+</form>
 </div>
 {% endblock %}

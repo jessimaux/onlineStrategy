@@ -1,6 +1,6 @@
 from django import forms
-from django.forms import modelformset_factory, BaseModelFormSet, inlineformset_factory
-from .models import Answer, Question, Municipality, MethodMunicipality
+from django.forms import modelformset_factory, BaseModelFormSet, inlineformset_factory, BaseInlineFormSet
+from .models import Answer, Question, Municipality, MethodMunicipality, Diagnostic
 from accounts.models import Account
 
 
@@ -46,4 +46,27 @@ MethodMunicipalityInlineFormset = inlineformset_factory(Municipality,
                                                         MethodMunicipality,
                                                         form=MethodMunicipalityForm,
                                                         can_delete=True,
-                                                        extra=0)
+                                                        extra=1)
+
+
+AnswerCreateFormset = inlineformset_factory(Question, Answer, fields=['ans', 'correct'], extra=1)
+
+
+class BaseQuestionCreateFormset(BaseInlineFormSet):
+    def add_fields(self, form, index):
+        super(BaseQuestionCreateFormset, self).add_fields(form, index)
+
+        form.nested = AnswerCreateFormset(
+                        instance=form.instance,
+                        data=form.data if form.is_bound else None,
+                        files=form.files if form.is_bound else None,
+                        prefix='answer-%s-%s' % (
+                            form.prefix,
+                            AnswerCreateFormset.get_default_prefix()))
+
+
+QuestionCreateFormset = inlineformset_factory(Diagnostic,
+                                              Question,
+                                              formset=BaseQuestionCreateFormset,
+                                              fields=['title', 'mark1'],
+                                              extra=1)

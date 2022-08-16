@@ -2,9 +2,6 @@ from django.urls import path
 from . import views
 from django.contrib.auth.views import LogoutView
 
-from django.conf import settings
-from django.conf.urls.static import static
-
 urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
     path('logout', LogoutView.as_view(), name='logout'),
@@ -15,6 +12,10 @@ urlpatterns = [
     path('moderate/manuals/create', views.ModerateManualsCreateView.as_view(), name='moderate-manuals-create'),
     path('moderate/manuals/<int:pk>/delete', views.ModerateManualsDeleteView.as_view(), name='moderate-manuals-delete'),
     path('moderate/manuals/<int:pk>/update', views.ModerateManualsUpdateView.as_view(), name='moderate-manuals-update'),
+    path('moderate/courses/<int:pk>/signs', views.AccountCourseListView.as_view(), name='moderate-courses-signs-view'),
+    path('moderate/methodist', views.ModerateMethodistFormView.as_view(), name='moderate-methodist'),
+    path('moderate/diagnostics', views.ModerateDiagnosticsListView.as_view(), name='moderate-diagnostics'),
+    path('moderate/diagnostics/create', views.ModerateDiagnosticsCreateView.as_view(), name='moderate-diagnostics-create'),
     path('route', views.RouteView.as_view(), name='route'),
     path('route/manuals/<int:pk>/add', views.add2route_manual, name='route-add'),
     path('route/manuals/<int:pk>/delete', views.RouteDeleteView.as_view(), name='route-delete'),
@@ -30,5 +31,4 @@ urlpatterns = [
     path('method/manuals', views.RouteManualsListView.as_view(), name='route-manuals'),
     path('method/profiles/<int:pk>', views.MethodProfilesDetailView.as_view(), name='method-profiles-item'),
     path('method/statistics', views.MethodStatisticsView.as_view(), name='method-statistics'),
-    path('moderate/methodist', views.ModerateMethodistFormView.as_view(), name='moderate-methodist')
 ]
