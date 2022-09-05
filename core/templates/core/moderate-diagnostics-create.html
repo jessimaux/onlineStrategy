@@ -4,22 +4,48 @@
 {% block title %}Диагностики{% endblock %}
 {% block page %}
 <div class="container">
-{{ formset.management_form }}
-{{ formset.non_form_errors }}
+  <label for="reason">Список вопросов диагностики</label>
+  {{ formsets.management_form }}
+  {{ formsets.non_form_errors }}
 
-{% for child_form in formset.forms %}
-    {{ child_form }}
+  <div style="display:none;" id="question_form_template">
 
-    {% if child_form.nested %}
-        {{ child_form.nested.management_form }}
-        {{ child_form.nested.non_form_errors }}
+    {{ formsets.empty_form }} <br>
+    <div class="answers-forms" class="form-group">
+      {{ formsets.empty_form.nested.management_form }}
+      {{ formsets.empty_form.nested.non_form_errors }}
+    </div> <!-- where the generated forms go -->
+    
+    <input type="button" id="add_more_answers" class="btn btn-primary" value="Добавить ответ" />
+    </div>
+  </div>
 
-        {% for nested_form in child_form.nested.forms %}
-            {{ nested_form }}
-        {% endfor %}
+  <div style="display:none;" id="answer_form_template">
+    {{ formsets.empty_form.nested.empty_form }}<br>
+  </div>
 
-    {% endif %}
 
-{% endfor %}
+  <div id="question-forms" class="form-group"></div><!-- where the generated forms go -->
+  <input type="button" id="add_more_question" class="btn btn-primary" value="Добавить вопрос" />
+
+  <script>
+   $('#add_more_question').click(function () {
+    let total_form = $('#id_question_set-TOTAL_FORMS');
+    let form_idx = total_form.val();
+
+    $('#question-forms').append($('#question_form_template').html().replace(/__prefix__/g, form_idx));
+    $('html, body').animate({scrollTop:999000}, 400);
+    total_form.val(parseInt(form_idx)+1);
+  });
+</script>
+
 </div>
 {% endblock %}
+
+{% if formsets.empty_form.nested %}
+    {{ formsets.empty_form.nested.management_form }}
+    {{ formsets.empty_form.nested.non_form_errors }}
+
+    {{ formsets.empty_form.nested.empty_form }}<br>
+
+    {% endif %}

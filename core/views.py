@@ -480,8 +480,8 @@ class MethodProfilesDetailView(LoginRequiredMixin, MethodistPermissionsMixin, Te
         return context
 
 
-class MethodStatisticsView(LoginRequiredMixin, MethodistPermissionsMixin, ListView):
-    template_name = 'core/method-statistic.html'
+class MethodView(LoginRequiredMixin, MethodistPermissionsMixin, ListView):
+    template_name = 'core/method.html'
     context_object_name = 'object_list'
     model = Route
     paginate_by = 25
@@ -551,6 +551,6 @@ class ModerateDiagnosticsCreateView(LoginRequiredMixin, ModeratorPermissionsMixi
 
     def get_context_data(self):
         context = super(ModerateDiagnosticsCreateView, self).get_context_data()
-        context['formset'] = QuestionCreateFormset()
+        context['formsets'] = QuestionCreateFormset()
 
         return context

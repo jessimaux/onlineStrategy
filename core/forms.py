@@ -69,4 +69,4 @@ QuestionCreateFormset = inlineformset_factory(Diagnostic,
                                               Question,
                                               formset=BaseQuestionCreateFormset,
                                               fields=['title', 'mark1'],
-                                              extra=1)
+                                              extra=0)

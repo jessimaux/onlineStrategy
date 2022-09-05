@@ -30,5 +30,5 @@ urlpatterns = [
     path('method/signs/<int:pk>', views.MethodSignsUpdateView.as_view(), name='method-signs-item'),
     path('method/manuals', views.RouteManualsListView.as_view(), name='route-manuals'),
     path('method/profiles/<int:pk>', views.MethodProfilesDetailView.as_view(), name='method-profiles-item'),
-    path('method/statistics', views.MethodStatisticsView.as_view(), name='method-statistics'),
+    path('method', views.MethodView.as_view(), name='method'),
 ]
