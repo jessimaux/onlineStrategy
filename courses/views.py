@@ -18,7 +18,8 @@ class CoursesListView(LoginRequiredMixin, ListView):
     template_name = 'courses/courses.html'
     context_object_name = 'object_list'
     model = Course
-    paginate_by = 6
+    paginate_by = 10
+    ordering = 'id'
 
     def get_queryset(self):
         query = self.request.GET.get('search')

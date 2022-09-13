@@ -1,7 +1,7 @@
 {% extends 'core/page-layout.html' %}
 {% load widget_tweaks %}
 {% load static %}
-{% block title %}Курсы{% endblock %}
+{% block title %}Образовательный маршрут{% endblock %}
 {% block page %}
 <div class="container">
   {% if messages %}
@@ -12,7 +12,6 @@
   {% endfor %}
   {% endif %}
 
-  {% if diagnostics_exists %}
   <div class="row mb-3">
     <div class="col-12">
       <div class="app-card app-card-stats-table h-100 shadow-sm">
@@ -20,12 +19,13 @@
         <div class="app-card-header p-3">
           <div class="row justify-content-between align-items-center">
             <div class="col-auto">
-              <h4 class="app-card-title">Открытые уроки</h4>
+              <h4 class="app-card-title">Образовательный маршрут</h4>
             </div>
           </div>
         </div>
 
         <div class="app-card-body p-3 w-100">
+          {% if diagnostics_exists %}
           <div class="table-responsive">
             <table class="table app-table-hover text-left">
               <thead>
@@ -39,7 +39,7 @@
                 </tr>
               </thead>
 
-              <tbody>
+              <tbody class="sortableTable">
                 {% for item in route %}
                 <tr id="item_{{ item.manual.id }}">
                   <td class="cell"><i class="fa-solid fa-grip-vertical handle"></i> {{ item.manual.title }}</td>
@@ -48,6 +48,9 @@
                   <td class="cell">{{ item.get_status_display }}</td>
                   <td class="cell">{{ item.deadline|date:"d.m.Y" }}</td>
                   <td class="cell">
+                    {% if item.id not in reflections_exists %}
+                    <a href="{% url 'route-reflection-create' item.id %}" class="btn btn-primary text-white"><i class="fa-solid fa-check"></i></a>
+                    {% endif %}
                     <a href="{% url 'route-update' item.id %}" class="btn btn-primary text-white"><i class="far fa-edit"></i></a>
                     <form action="{% url 'route-delete' pk=item.id %}" method="POST" style="display: inline;" onsubmit="window.mytest()">
                       {% csrf_token %}
@@ -55,6 +58,14 @@
                     </form>
                     <script type="text/javascript">window.mytest = function() { var isValid = confirm('Вы уверены, что хотите удалить данный материал?');if (!isValid) { event.preventDefault();}}</script>
                   </td>
+                </tr>
+                {% empty %}
+                <tr><td class="cell">Образовательных материлов не добавлено</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
                 </tr>
                 {% endfor %}
               </tbody>
@@ -68,16 +79,19 @@
               <button id="saveOrdering" class="btn btn-primary btn-block btn-lg" type="submit">Сохранить</button>
             </div>
           </form>
+        {% else %}
+          <div class="item-data">Для составления образовательного маршрута - пройдите <a href="{% url 'route-diagnostics' %}">диагностику</a></div>
+        {% endif %}
         </div>
       </div>
     </div>
 
     <script>
       $( function() {
-        $( "table tbody" ).sortable();
+        $( ".sortableTable" ).sortable();
 
         $('#saveOrdering').click(function(){
-          $('#orderingInput').val($("table tbody").sortable('serialize').replaceAll('item[]=',''));
+          $('#orderingInput').val($(".sortableTable").sortable('serialize').replaceAll('item[]=',''));
         });
       });
     </script>
@@ -95,7 +109,8 @@
           </div>
         </div>
 
-        <div class="app-card-body px-4 w-100">
+        <div class="app-card-body p-3 w-100">
+          {% if diagnostics_exists %}
           <div class="table-responsive">
             <table class="table app-table-hover mt-2 text-left">
               <thead>
@@ -131,24 +146,23 @@
                   </td>
                 </tr>
                 {% empty %}
-                <p>Материалов нет</p>
+                <tr><td class="cell">Нет подходящих материалов</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
                 {% endfor %}
               </tbody>
             </table>
-
           </div>
+          {% else %}
+            <div class="item-data">Рекомендации не составлены - пройдите <a href="{% url 'route-diagnostics' %}">диагностику</a></div>
+          {% endif %}
         </div>
       </div>
     </div>
   </div>
-
-
-  {% else %}
-  <div class="col-lg-4 offset-lg-4">
-    <div class="alert alert-danger"> 
-      <p>Сначала пройдите диагонстику</p> 
-    </div>
-  </div>
-  {% endif %}
 </div>
 {% endblock %}

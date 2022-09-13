@@ -40,14 +40,6 @@
           {% endfor %}
         </div>
 
-        <div class="form-group">
-          <label>Рефлексия</label>
-          {{ form.reflection|attr:"class:form-control" }}
-          {% for error in form.reflection.errors %}
-          <p class="my-2 alert alert-danger">{{ error }}</p>
-          {% endfor %}
-        </div>
-
         <button class="mb-4 btn btn-primary btn-block btn-lg" type="submit">Сохранить</button>
       </form>
 

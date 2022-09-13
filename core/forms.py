@@ -4,7 +4,7 @@ from .models import Answer, Question, Municipality, MethodMunicipality, Diagnost
 from accounts.models import Account
 
 
-class BaseQuestionFormSet(BaseModelFormSet):
+class BaseQuestionAnswerFormset(BaseModelFormSet):
     def get_form_kwargs(self, index):
         kwargs = super().get_form_kwargs(index)
         q = kwargs['question_id'][index]
@@ -28,7 +28,7 @@ class AnswerForm(forms.ModelForm):
         if question_id:
             self.fields['answers'].queryset = Answer.objects.filter(question_id=question_id)
 
-QuestionFormSet = modelformset_factory(Question, AnswerForm, formset=BaseQuestionFormSet, extra=0)
+QFormSet = modelformset_factory(Question, AnswerForm, formset=BaseQuestionAnswerFormset, extra=0)
 
 
 class OrderingForm(forms.Form):
@@ -49,24 +49,29 @@ MethodMunicipalityInlineFormset = inlineformset_factory(Municipality,
                                                         extra=1)
 
 
-AnswerCreateFormset = inlineformset_factory(Question, Answer, fields=['ans', 'correct'], extra=1)
+class DiagnosticCreateForm(forms.ModelForm):
+    q_count = forms.IntegerField()
+    class Meta:
+        model = Diagnostic
+        fields =['title', 'description']
 
 
-class BaseQuestionCreateFormset(BaseInlineFormSet):
-    def add_fields(self, form, index):
-        super(BaseQuestionCreateFormset, self).add_fields(form, index)
-
-        form.nested = AnswerCreateFormset(
-                        instance=form.instance,
-                        data=form.data if form.is_bound else None,
-                        files=form.files if form.is_bound else None,
-                        prefix='answer-%s-%s' % (
-                            form.prefix,
-                            AnswerCreateFormset.get_default_prefix()))
+class DiagnosticUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Diagnostic
+        fields = ['title', 'description']
 
 
-QuestionCreateFormset = inlineformset_factory(Diagnostic,
-                                              Question,
-                                              formset=BaseQuestionCreateFormset,
-                                              fields=['title', 'mark1'],
-                                              extra=0)
+class QuestionCreateForm(forms.ModelForm):
+    class Meta:
+        model = Question
+        fields = ['title', 'mark1', 'mark2', 'mark3', 'mark4']
+
+
+class AnswerCreateForm(forms.ModelForm):
+    class Meta:
+        model = Answer
+        fields = ['ans', 'correct']
+
+
+AnswerCreateInlineFormset = inlineformset_factory(Question, Answer, form=AnswerCreateForm, can_delete=True, extra=0)

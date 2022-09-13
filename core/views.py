@@ -10,11 +10,12 @@ from django.http import HttpResponseRedirect
 from courses.models import Course, AccountCourse
 from accounts.models import Account
 from .models import Question, Diagnostic, DiagnosticResult, Methodist2Teacher, MethodistLessonSigns, RouteManual, Route,\
-    Events, MethodMunicipality, Municipality
+    Events, Municipality, RouteReflection
 
 from django.db.models import Q
 
-from .forms import QuestionFormSet, OrderingForm, MethodMunicipalityInlineFormset, QuestionCreateFormset
+from .forms import QFormSet, OrderingForm, MethodMunicipalityInlineFormset, DiagnosticCreateForm, QuestionCreateForm, \
+    AnswerCreateInlineFormset, DiagnosticUpdateForm
 from courses.forms import AccountCourseInListForm, SignFormSet
 from accounts.forms import AccountUpdateForm
 
@@ -22,9 +23,7 @@ from django.urls import reverse_lazy
 from django.contrib import messages
 from .tools import negative_number_is_zero
 
-from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import Paginator
-from django.shortcuts import render
 
 from datetime import date
 
@@ -85,13 +84,16 @@ class IndexView(LoginRequiredMixin, TemplateView):
     def get(self, request, *args, **kwargs):
         context = self.get_context_data()
 
-        lesson_signs = MethodistLessonSigns.objects.filter(teacher_id=self.request.user.id)
+        reflections = RouteReflection.objects.filter(route_id__in=Route.objects.filter(account_id=self.request.user.id))
+        context['reflections'] = reflections
+
+        lesson_signs = MethodistLessonSigns.objects.filter(teacher_id=self.request.user.id).order_by('id')
         paginator_lesson_signs = Paginator(lesson_signs, 10)
         page_number_lesson_signs = self.request.GET.get('lpage')
         lpage_obj = paginator_lesson_signs.get_page(page_number_lesson_signs)
         context['lpage_obj'] = lpage_obj
 
-        course_signs = AccountCourse.objects.filter(account_id=self.request.user.id)
+        course_signs = AccountCourse.objects.filter(account_id=self.request.user.id).order_by('id')
         paginator_course_signs = Paginator(course_signs, 10)
         page_number_course_signs = self.request.GET.get('cpage')
         cpage_obj = paginator_course_signs.get_page(page_number_course_signs)
@@ -105,6 +107,7 @@ class RouteManualsListView(LoginRequiredMixin, ListView):
     context_object_name = 'object_list'
     model = RouteManual
     paginate_by = 25
+    ordering = 'id'
 
     def get_queryset(self):
         query = self.request.GET.get('q')
@@ -134,10 +137,14 @@ class RouteView(LoginRequiredMixin, TemplateView):
     
     def get_context_data(self, **kwargs):
         context = super(RouteView, self).get_context_data()
-        context['route'] = Route.objects.filter(account_id=self.request.user.id).order_by('order')
+
+        profile_route = Route.objects.filter(account_id=self.request.user.id).order_by('order')
+        context['route'] = profile_route
+
+        context['reflections_exists'] = RouteReflection.objects.filter(route_id__in=profile_route).values_list('id', flat=True)
 
         """ selection manuals """
-        # TODO: random queryset w max pos 50
+        # TODO: improve recomendations
         try:
             profile = DiagnosticResult.objects.get(account_id=self.request.user.id)
             context['diagnostics_exists'] = True
@@ -145,6 +152,7 @@ class RouteView(LoginRequiredMixin, TemplateView):
             context['diagnostics_exists'] = False
             return context
 
+        '''Take unusing manuals and recommend it with evklid distance > 5'''
         using_manuals = Route.objects.filter(account_id=self.request.user.id)
         manuals = RouteManual.objects.exclude(id__in=using_manuals.values('manual_id'))
         context['recommendation'] = list()
@@ -180,8 +188,36 @@ class RouteDeleteView(LoginRequiredMixin, DeleteView):
 class RouteUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'core/route-item.html'
     model = Route
-    fields = ['deadline', 'status', 'reflection']
-    success_url = '/route'
+    fields = ['deadline', 'status']
+    success_url = reverse_lazy('route')
+
+
+class RouteReflectionCreateView(LoginRequiredMixin, CreateView):
+    template_name = 'core/route-reflection-create.html'
+    model = RouteReflection
+    fields = ['text']
+    success_url = reverse_lazy('route')
+
+    def dispatch(self, request, *args, **kwargs):
+        reflection_exists = RouteReflection.objects.filter(route_id=self.kwargs['pk'])
+        if reflection_exists:
+            return HttpResponseRedirect(reverse_lazy('route'))
+
+    def get_context_data(self, **kwargs):
+        context = super(RouteReflectionCreateView, self).get_context_data()
+        context['manual'] = RouteManual.objects.get(id=Route.objects.get(id=self.kwargs['pk']).manual_id)
+        return context
+
+    def form_valid(self, form):
+        form.instance.route_id = self.kwargs['pk']
+        return super(RouteReflectionCreateView, self).form_valid(form)
+
+
+class RouteReflectionUpdateView(LoginRequiredMixin, UpdateView):
+    template_name = 'core/route-reflection-update.html'
+    model = RouteReflection
+    fields = ['text']
+    success_url = reverse_lazy('route')
 
 
 class RouteSignsCreateView(LoginRequiredMixin, CreateView):
@@ -189,6 +225,16 @@ class RouteSignsCreateView(LoginRequiredMixin, CreateView):
     fields = ['lesson_title', 'lesson_description', 'lesson_plan', 'date', 'meet_type', 'meet_link']
     template_name = 'core/route-signs-up.html'
     success_url = reverse_lazy('index')
+
+    '''Redirect if user have active lesson sign'''
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            active_lesson = MethodistLessonSigns.objects.get(teacher_id=self.request.user.id,
+                                                             status__in=('СМОТР', 'ОДОБР'))
+        except MethodistLessonSigns.DoesNotExist:
+            active_lesson = None
+        if active_lesson:
+            return HttpResponseRedirect(reverse_lazy('index'))
 
     def form_valid(self, form):
         form.instance.teacher_id = self.request.user.id
@@ -207,6 +253,8 @@ class DiagnosticListView(LoginRequiredMixin, ListView):
     template_name = 'core/route-diagnostics.html'
     context_object_name = 'object_list'
     model = Diagnostic
+    paginate_by = 10
+    ordering = 'id'
 
 
 class DiagnosticDetailView(LoginRequiredMixin, TemplateView):
@@ -216,13 +264,14 @@ class DiagnosticDetailView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data()
         object_list = Question.objects.filter(diagnostic=self.kwargs['pk'])
         qs = list(object_list)
-        context['formset'] = QuestionFormSet(queryset=object_list, form_kwargs={'question_id': qs})
+        context['formset'] = QFormSet(queryset=object_list, form_kwargs={'question_id': qs})
+        context['diagnostic'] = Diagnostic.objects.get(id=self.kwargs['pk'])
         return context
 
     def post(self, request, *args, **kwargs):
         object_list = Question.objects.filter(diagnostic=self.kwargs['pk'])
         qs = list(object_list)
-        formset = QuestionFormSet(request.POST, form_kwargs={'question_id': qs})
+        formset = QFormSet(request.POST, form_kwargs={'question_id': qs})
         if formset.is_valid():
             return self.form_valid(formset)
 
@@ -246,7 +295,7 @@ class DiagnosticDetailView(LoginRequiredMixin, TemplateView):
                                                mark2=mark2,
                                                mark3=mark3,
                                                mark4=mark4)
-        return HttpResponseRedirect('/route/profile')
+        return HttpResponseRedirect(reverse_lazy('index'))
 
     def get(self, request, *args, **kwargs):
         try:
@@ -294,6 +343,7 @@ class ModerateProfilesListView(LoginRequiredMixin, ModeratorPermissionsMixin, Li
     context_object_name = 'object_list'
     model = Account
     paginate_by = 50
+    ordering = 'id'
 
     def get_queryset(self):
         query = self.request.GET.get('q')
@@ -315,6 +365,7 @@ class ModerateCoursesListView(LoginRequiredMixin, ModeratorPermissionsMixin, Lis
     context_object_name = 'object_list'
     model = Course
     paginate_by = 10
+    ordering = 'id'
 
     def get_queryset(self):
         query = self.request.GET.get('q')
@@ -380,6 +431,7 @@ class ModerateManualsListView(LoginRequiredMixin, ModeratorPermissionsMixin, Lis
     context_object_name = 'object_list'
     model = RouteManual
     paginate_by = 25
+    ordering = 'id'
 
     def get_queryset(self):
         query = self.request.GET.get('q')
@@ -395,12 +447,14 @@ class ModerateManualsCreateView(LoginRequiredMixin, ModeratorPermissionsMixin, C
     model = RouteManual
     fields = '__all__'
     template_name = 'core/moderate-manuals-create.html'
+    success_url = reverse_lazy('moderate-manuals')
 
 
 class ModerateManualsUpdateView(LoginRequiredMixin, ModeratorPermissionsMixin, UpdateView):
     model = RouteManual
     template_name = 'core/moderate-manuals-update.html'
     fields = '__all__'
+    success_url = reverse_lazy('moderate-manuals')
 
 
 class ModerateManualsDeleteView(LoginRequiredMixin, ModeratorPermissionsMixin, DeleteView):
@@ -413,6 +467,7 @@ class MethodProfilesListView(LoginRequiredMixin, MethodistPermissionsMixin, List
     context_object_name = 'object_list'
     model = Methodist2Teacher
     paginate_by = 50
+    ordering = 'id'
 
     def get_queryset(self):
         object_list = Methodist2Teacher.objects.filter(methodist_id=self.request.user.id)
@@ -433,6 +488,7 @@ class MethodSignsListView(LoginRequiredMixin, MethodistPermissionsMixin, ListVie
     context_object_name = 'object_list'
     model = MethodistLessonSigns
     paginate_by = 25
+    ordering = 'id'
 
     def get_queryset(self):
         method_obj = Methodist2Teacher.objects.filter(methodist_id=self.request.user.id)
@@ -480,17 +536,39 @@ class MethodProfilesDetailView(LoginRequiredMixin, MethodistPermissionsMixin, Te
         return context
 
 
-class MethodView(LoginRequiredMixin, MethodistPermissionsMixin, ListView):
-    template_name = 'core/method.html'
-    context_object_name = 'object_list'
-    model = Route
-    paginate_by = 25
+class MethodReflectionUpdateView(LoginRequiredMixin, MethodistPermissionsMixin, UpdateView):
+    model = RouteReflection
+    fields = ['status', 'commentary']
+    template_name = 'core/method-reflections-update.html'
+    success_url = reverse_lazy('method')
 
-    def get_queryset(self):
+
+class MethodView(LoginRequiredMixin, MethodistPermissionsMixin, TemplateView):
+    template_name = 'core/method.html'
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data()
+
+        method_obj = Methodist2Teacher.objects.filter(methodist_id=self.request.user.id)
+        lesson_signs = MethodistLessonSigns.objects.filter(teacher_id__in=method_obj.values('teacher_id')).order_by('id')
+        paginator_lesson_signs = Paginator(lesson_signs, 10)
+        page_number_lesson_signs = self.request.GET.get('lpage')
+        lpage_obj = paginator_lesson_signs.get_page(page_number_lesson_signs)
+        context['lpage_obj'] = lpage_obj
+
+        route_ids = Route.objects.filter(account_id__in=method_obj.values('teacher_id'))
+        reflections = RouteReflection.objects.filter(route_id__in=route_ids.values('id'))
+        context['reflections'] = reflections
+
         teachers = Methodist2Teacher.objects.filter(methodist_id=self.request.user.id)
-        object_list = Route.objects.filter(account_id__in=teachers.values('teacher_id'),
-                                           deadline__lt=date.today())
-        return object_list
+        iom_deadline = Route.objects.filter(account_id__in=teachers.values('teacher_id'),
+                                            deadline__lt=date.today()).order_by('id')
+        paginator_iom_deadline = Paginator(iom_deadline, 10)
+        page_number_iom_deadline = self.request.GET.get('iompage')
+        iompage_obj = paginator_iom_deadline.get_page(page_number_iom_deadline)
+        context['iompage_obj'] = iompage_obj
+
+        return self.render_to_response(context)
 
 
 class ModerateMethodistFormView(LoginRequiredMixin, ModeratorPermissionsMixin, TemplateView):
@@ -536,6 +614,7 @@ class ModerateDiagnosticsListView(LoginRequiredMixin, ModeratorPermissionsMixin,
     context_object_name = 'object_list'
     model = Diagnostic
     paginate_by = 25
+    ordering = 'id'
 
     def get_queryset(self):
         query = self.request.GET.get('q')
@@ -546,11 +625,71 @@ class ModerateDiagnosticsListView(LoginRequiredMixin, ModeratorPermissionsMixin,
             return super().get_queryset()
 
 
-class ModerateDiagnosticsCreateView(LoginRequiredMixin, ModeratorPermissionsMixin, TemplateView):
+class ModerateDiagnosticsCreateView(LoginRequiredMixin, ModeratorPermissionsMixin, CreateView):
     template_name = 'core/moderate-diagnostics-create.html'
+    success_url = reverse_lazy('moderate-diagnostics')
+    form_class = DiagnosticCreateForm
+    
+    def form_valid(self, form):
+        response = super(ModerateDiagnosticsCreateView, self).form_valid(form)
+        for i in range(form.cleaned_data["q_count"]):
+            Question.objects.create(diagnostic_id=form.instance.pk)
+        return response
 
-    def get_context_data(self):
-        context = super(ModerateDiagnosticsCreateView, self).get_context_data()
-        context['formsets'] = QuestionCreateFormset()
 
+class ModerateDiagnosticsUpdateView(LoginRequiredMixin, ModeratorPermissionsMixin, TemplateView):
+    template_name = 'core/moderate-diagnostics-update.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ModerateDiagnosticsUpdateView, self).get_context_data()
+
+        q_query = Question.objects.filter(diagnostic_id=self.kwargs['pk'])
+        temp_q = list()
+        temp_a = list()
+
+        for i in range(len(q_query)):
+            temp_q.append(QuestionCreateForm(instance=q_query[i], prefix='q_form-' + str(i)))
+            temp_a.append(AnswerCreateInlineFormset(instance=q_query[i], prefix='a_formset-' + str(i)))
+
+        context['formsets'] = zip(temp_q, temp_a)
+        context['diagnostic_form'] = DiagnosticUpdateForm(instance=Diagnostic.objects.get(id=self.kwargs['pk']))
         return context
+
+    def post(self, *args, **kwargs):
+        q_query = Question.objects.filter(diagnostic_id=self.kwargs['pk'])
+
+        diagnostic_form = DiagnosticUpdateForm(data=self.request.POST,
+                                               instance=Diagnostic.objects.get(id=self.kwargs['pk']))
+        temp_q = list()
+        temp_a = list()
+
+        for i in range(len(q_query)):
+            temp_q.append(QuestionCreateForm(self.request.POST, instance=q_query[i], prefix='q_form-' + str(i)))
+            temp_a.append(AnswerCreateInlineFormset(data=self.request.POST,
+                                                      instance=q_query[i],
+                                                      prefix='a_formset-' + str(i)))
+
+        formsets = zip(temp_q, temp_a)
+
+        if diagnostic_form.is_valid():
+            diagnostic_form.save()
+
+        for q_form, formset in formsets:
+            if q_form.is_valid() and formset.is_valid():
+                q_form.save()
+                formset.save(commit=False)
+
+                for form in formset:
+                    form_obj = form.save(commit=False)
+                    if form_obj.question_id:
+                        form_obj.save()
+
+                for obj in formset.deleted_objects:
+                    obj.delete()
+
+        return HttpResponseRedirect(reverse_lazy('moderate-diagnostics'))
+
+
+class ModerateDiagnosticsDeleteView(LoginRequiredMixin, ModeratorPermissionsMixin, DeleteView):
+    model = Diagnostic
+    success_url = reverse_lazy('moderate-diagnostics')

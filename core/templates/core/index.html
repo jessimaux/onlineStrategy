@@ -172,6 +172,7 @@
 
 
 <div class="col-6 col-lg-6">
+  <div class="row app-card-half mb-4">
   <div class="app-card app-card-stats-table h-100 shadow-sm">
     <div class="app-card-header p-3">
       <div class="row justify-content-between align-items-center">
@@ -237,6 +238,74 @@
 
     </div>
   </div>
+  </div>
+
+<div class="row app-card-half">
+    <div class="app-card app-card-stats-table h-100 shadow-sm">
+    <div class="app-card-header p-3">
+      <div class="row justify-content-between align-items-center">
+        <div class="col-auto">
+          <h4 class="app-card-title">Мои рефлексии</h4>
+        </div><!--//col-->
+      </div><!--//row-->
+    </div><!--//app-card-header-->
+
+    <div class="app-card-body px-4 w-100">
+      <div class="table-responsive">
+        <table class="table app-table-hover mb-0 text-left">
+          <thead>
+            <tr>
+              <th class="cell fw-bold">Номер</th>
+              <th class="cell fw-bold">Материал</th>
+              <th class="cell fw-bold">Статус</th>
+              <th class="cell fw-bold"></th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for reflection in reflections %}
+            <tr>
+              <td class="cell">{{reflection.id}}</td>
+              <td class="cell">{{reflection.route.manual.title}}</td>
+              <td class="cell">{{reflection.get_status_display}}</td>
+              <td class="cell"><a href="{% url 'route-reflection-update' reflection.id %}">Изменить</a></td>
+            </tr>
+            {% empty %}
+                <tr><td class="cell">Заявок нет</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div><!--//table-responsive-->
+
+      {% if lpage_obj.paginator.num_pages > 1 %}
+      <div class="my-3 text-center pagination">
+        <span class="step-links">
+          {% if lpage_obj.has_previous %}
+          <a href="?lpage=1">&laquo; В начало</a>
+          <a href="?lpage={{ lpage_obj.previous_page_number }}">| предыдущая</a>
+          {% endif %}
+
+          <span class="current">
+            Страница {{ lpage_obj.number }} из {{ lpage_obj.paginator.num_pages }}.
+          </span>
+
+          {% if lpage_obj.has_next %}
+          <a href="?lpage={{ lpage_obj.next_page_number }}">следующая | </a>
+          <a href="?lpage={{ lpage_obj.paginator.num_pages }}">В конец &raquo;</a>
+          {% endif %}
+        </span>
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+  </div>
+
 </div>
 </div>
 

@@ -72,6 +72,10 @@ img{width:100%}
 	border-radius: 0.25rem;
 }
 
+.app-card-half {
+	height: 48%!important;
+}
+
 .app-card .app-card-header {
 	border-bottom: 1px solid #e7e9ed;
 }

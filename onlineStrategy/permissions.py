@@ -4,7 +4,7 @@ from accounts.models import Account
 from django.http import Http404
 
 
-# TODO: WHAT IS THIS? ITS REALLY NEED? LOGINREQUIREDMIXIN OR THAT? USE IN accounts/views
+# Check user auth: if auth, 404 for regView
 class AuthenticationPermissionsMixin:
     def has_permissions(self):
         return not self.request.user.is_authenticated

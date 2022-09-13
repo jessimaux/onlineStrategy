@@ -1,7 +1,7 @@
 {% extends 'core/page-layout.html' %}
 {% load widget_tweaks %}
 {% load static %}
-{% block title %}Диагностики{% endblock %}
+{% block title %}Модерация диагностик{% endblock %}
 {% block page %}
 <div class="container">
   <div class="row g-4 mb-4">
@@ -35,7 +35,12 @@
                 <tr>
                   <td class="cell"><a href="{% url 'course' item.id %}">{{ item.title }}</a></td>
                   <td class="cell">
-                    Изменить Удалить
+                    <a href="{% url 'moderate-diagnostics-update' item.id %}" class="btn btn-primary text-white"><i class="far fa-edit"></i></a>
+                    <form action="{% url 'moderate-diagnostics-delete' pk=item.id %}" method="POST" style="display: inline;" onsubmit="window.mytest()">
+                      {% csrf_token %}
+                   <button type="submit" value="Delete" class="btn btn-primary"><i class="far fa-trash-alt"></i></button>
+                  </form>
+                    <script type="text/javascript">window.mytest = function() { var isValid = confirm('Вы уверены, что хотите удалить данную диагностику?');if (!isValid) { event.preventDefault();}}</script>
                   </td>
                 </tr>
                 {% empty %}

@@ -4,43 +4,46 @@
 {% block title %}Курсы{% endblock %}
 {% block page %}
 <div class="container">
-  <h2 class="my-3">Образовательный маршрут</h2>
 
-<form method="post">
-  {% csrf_token %}
-  {{ formset.management_form }}
-  {% for form in formset %}
-    {% if form.non_field_errors %}
-    <div class="alert alert-danger">
-            {{ form.non_field_errors }}
-        </div>
-    {% endif %}
-
-    {{ form.title.value }} 
-    {{ form }} <br>
-  {% endfor %}
-  <button class="mb-4 btn btn-primary btn-block btn-lg" type="submit">Сохранить</button>
-</form>
-
-
-<!-- old version without form
+  <div class="app-card app-card-notification shadow-sm mb-4">
+      <div class="app-card-header px-4 py-3">
+        <div class="row g-3 align-items-center">
+          <div class="col-12 col-lg-auto text-center text-lg-start">
+            <h4 class="app-card-title">{{diagnostic.title}}</h4>
+          </div><!--//col-->
+        </div><!--//row-->
+      </div><!--//app-card-header-->
+      <div class="app-card-body p-4">
+        <div class="notification-content">Описание</div>
+      </div><!--//app-card-body-->
+    </div>
 
   <form method="post">
     {% csrf_token %}
+    {{ formset.management_form }}
+    {% for form in formset %}
+    {% if form.non_field_errors %}
+    <div class="alert alert-danger">
+      {{ form.non_field_errors }}
+    </div>
+    {% endif %}
 
-    {% for q in questions %}
-      {{ forloop.counter }}. {{q.title }}
-      {% for ans in q.answer_set.filter %}
-      <div class="form-check">
-        <input class="form-check-input" type="radio" name="flexRadio-{{forloop.parentloop.counter}}" value="{{ ans.id }}">
-        <label class="form-check-label">{{ ans.title }}</label>
-      </div>
-      {% endfor %}
+    <div class="app-card app-card-notification shadow-sm mb-4">
+      <div class="app-card-header px-4 py-3">
+        <div class="row g-3 align-items-center">
+          <div class="col-12 col-lg-auto text-center text-lg-start">
+            <h4 class="app-card-title">{{ form.title.value }} </h4>
+          </div><!--//col-->
+        </div><!--//row-->
+      </div><!--//app-card-header-->
+      <div class="app-card-body p-4">
+        <div class="notification-content">{{ form }}</div>
+      </div><!--//app-card-body-->
+    </div>
     {% endfor %}
-
-    <button class="mb-4 btn btn-primary btn-block btn-lg" type="submit">Сохранить</button>
-  </form>-->
-  
-
-  </div>
+    <div class="offset-lg-10 lg-2">
+      <button id="saveOrdering" class="btn btn-primary btn-block btn-lg" type="submit">Сохранить</button>
+    </div>
+  </form>
+</div>
 {% endblock %}

@@ -11,10 +11,11 @@ from django.dispatch import receiver
 
 class Diagnostic(models.Model):
     title = models.CharField(max_length=256, blank=True)
+    description = models.TextField(blank=True, null=True)
 
 
 class Question(models.Model):
-    diagnostic = models.ForeignKey(Diagnostic, on_delete=models.DO_NOTHING)
+    diagnostic = models.ForeignKey(Diagnostic, on_delete=models.CASCADE)
     title = models.CharField(max_length=256, blank=True)
     mark1 = models.BooleanField(blank=True, default=False)
     mark2 = models.BooleanField(blank=True, default=False)
@@ -23,17 +24,17 @@ class Question(models.Model):
 
 
 class Answer(models.Model):
-    question = models.ForeignKey(Question,  on_delete=models.DO_NOTHING)
+    question = models.ForeignKey(Question,  on_delete=models.CASCADE)
     ans = models.CharField(max_length=256, blank=True)
-    correct = models.BooleanField(blank=True)
+    correct = models.BooleanField(blank=True, default=False)
 
     def __str__(self):
         return self.ans
 
 
 class DiagnosticResult(models.Model):
-    diagnostic = models.ForeignKey(Diagnostic, on_delete=models.DO_NOTHING)
-    account = models.ForeignKey(Account, on_delete=models.DO_NOTHING)
+    diagnostic = models.ForeignKey(Diagnostic, on_delete=models.CASCADE)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
     mark1 = models.IntegerField(blank=True, null=True)
     mark2 = models.IntegerField(blank=True, null=True)
     mark3 = models.IntegerField(blank=True, null=True)
@@ -41,12 +42,12 @@ class DiagnosticResult(models.Model):
 
 
 class Methodist2Teacher(models.Model):
-    methodist = models.ForeignKey(Account, related_name='methodist2teachers', on_delete=models.DO_NOTHING)
-    teacher = models.ForeignKey(Account, related_name='teachers', on_delete=models.DO_NOTHING)
+    methodist = models.ForeignKey(Account, related_name='methodist2teachers', on_delete=models.CASCADE)
+    teacher = models.ForeignKey(Account, related_name='teachers', on_delete=models.CASCADE)
 
 
 class MethodistLessonSigns(models.Model):
-    teacher = models.ForeignKey(Account, on_delete=models.DO_NOTHING)
+    teacher = models.ForeignKey(Account, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     date = models.DateTimeField(blank=True, null=True)
     lesson_title = models.CharField(max_length=256, blank=True, null=True)
@@ -93,16 +94,27 @@ class RouteManual(models.Model):
 
 
 class Route(models.Model):
-    account = models.ForeignKey(Account, on_delete=models.DO_NOTHING)
-    manual = models.ForeignKey(RouteManual, on_delete=models.DO_NOTHING)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    manual = models.ForeignKey(RouteManual, on_delete=models.CASCADE)
     STATUS_CHOICES = (
         ('АКТИВ', 'В процессе'),
         ('ЗАКР', 'Завершен'),
     )
     status = models.CharField(max_length=32, choices=STATUS_CHOICES, default='ПЛАН')
     deadline = models.DateField(blank=True, null=True)
-    reflection = models.TextField(blank=True, null=True)
     order = models.IntegerField(default=1000)
+
+
+class RouteReflection(models.Model):
+    route = models.ForeignKey(Route, on_delete=models.CASCADE)
+    text = models.TextField(blank=True, null=True)
+    STATUS_CHOICES = (
+        ('РАССМ', 'На рассмотрении'),
+        ('ПОДТВ', 'Подтвержден'),
+        ('ОТКЛ', 'Отклонено'),
+    )
+    status = models.CharField(max_length=32, choices=STATUS_CHOICES, default='РАССМ')
+    commentary = models.TextField(blank=True, null=True)
 
 
 class Events(models.Model):
