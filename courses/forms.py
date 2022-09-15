@@ -1,19 +1,25 @@
 from django import forms
 from .models import Course, CourseProgram, CourseSpeakers
-from .models import AccountCourse, STATUS_CHOICES
+from .models import Account2Course
 from django.forms import modelformset_factory, Form, ChoiceField, CharField
 
 
 class AccountCourseInListForm(forms.ModelForm):
+    STATUS_CHOICES = (
+        ('ОТКЛ', 'Отклонено'),
+        ('СМОТР', 'На рассмотрении'),
+        ('ОДОБР', 'Одобрено'),
+        ('ОТКАЗ', 'Отказ участника')
+    )
     status = forms.ChoiceField(choices=STATUS_CHOICES,
                                widget=forms.Select(attrs={'onchange': 'submit();'}))
 
     class Meta:
-        model = AccountCourse
+        model = Account2Course
         fields = ['status']
 
 
-SignFormSet = modelformset_factory(AccountCourse, AccountCourseInListForm, extra=0)
+SignFormSet = modelformset_factory(Account2Course, AccountCourseInListForm, extra=0)
 
 
 class ProgramForm(forms.ModelForm):

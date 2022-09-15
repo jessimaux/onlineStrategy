@@ -104,8 +104,8 @@
       </div><!--//item-->
     </div><!--//app-card-body-->
     <div class="app-card-footer p-4 mt-auto">
-      {% if not active_lesson %}
-      <a class="btn app-btn-secondary" href="{% url 'route-signs-create' %}">Пригласить на урок</a>
+      {% if not active_lesson and method.methodist %}
+      <a class="btn app-btn-secondary" href="{% url 'route-lesson-signs-create' %}">Пригласить на урок</a>
       {% endif %}
     </div><!--//app-card-footer-->
 
@@ -202,7 +202,7 @@
               <td class="cell">{{sign.lesson_title}}</td>
               <td class="cell">{{sign.date|date:"d.m.Y H:i"}}</td>
               <td class="cell">{{sign.get_status_display}}</td>
-              <td class="cell"><a href="{% url 'route-signs-update' sign.id %}">Изменить</a></td>
+              <td class="cell"><a href="{% url 'route-lesson-signs-update' sign.id %}">{% if sign.status != 'СМОТР'%}Посмотреть{% else %}Изменить{%endif%}</a></td>
             </tr>
             {% empty %}
                 <tr><td class="cell">Заявок нет</td>
@@ -245,7 +245,7 @@
     <div class="app-card-header p-3">
       <div class="row justify-content-between align-items-center">
         <div class="col-auto">
-          <h4 class="app-card-title">Мои рефлексии</h4>
+          <h4 class="app-card-title">Рефлексии</h4>
         </div><!--//col-->
       </div><!--//row-->
     </div><!--//app-card-header-->
@@ -268,7 +268,7 @@
               <td class="cell">{{reflection.id}}</td>
               <td class="cell">{{reflection.route.manual.title}}</td>
               <td class="cell">{{reflection.get_status_display}}</td>
-              <td class="cell"><a href="{% url 'route-reflection-update' reflection.id %}">Изменить</a></td>
+              <td class="cell"><a href="{% url 'route-reflection-update' reflection.id %}">{% if reflection.status != 'СМОТР'%}Посмотреть{%else%}Изменить{%endif%}</a></td>
             </tr>
             {% empty %}
                 <tr><td class="cell">Заявок нет</td>
@@ -343,7 +343,7 @@
                 <td class="cell">{{ sign.course.get_type_display }}</td>
                 <td class="cell">{{ sign.course.date_start|date:"d.m.Y" }} - {{ sign.course.date_end|date:"d.m.Y" }}</td>
                 <td class="cell">{{ sign.get_status_display }}</td>
-                <td class="cell"><a href="{% url 'sign' sign.id %}">Подробнее</td>
+                <td class="cell"><a href="{% url 'course-sign-update' sign.id %}">Подробнее</td>
                 </tr>
                 {% empty %}
                 <tr><td class="cell">Заявок нет</td>

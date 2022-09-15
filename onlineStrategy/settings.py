@@ -42,6 +42,10 @@ INSTALLED_APPS = [
     'core',
     'accounts',
     'courses',
+    'diagnostics',
+    'method',
+    'moderate',
+    'route',
 ]
 
 MIDDLEWARE = [

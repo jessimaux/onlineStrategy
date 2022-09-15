@@ -1,11 +1,11 @@
-from django.shortcuts import render, redirect, reverse
-from django.contrib.auth import login, authenticate
+from django.shortcuts import redirect
+from django.contrib.auth import login
 from django.views import View
 from django.contrib.auth.views import LoginView, FormView
-from django.views.generic import UpdateView, RedirectView
+from django.views.generic import UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import RegisterForm, AccountUpdateForm, AccountPasswordResetForm
-from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.http import Http404, HttpResponse
 from django.template.loader import render_to_string
 from django.contrib.sites.shortcuts import get_current_site
 from .tokens import account_activation_token
@@ -16,7 +16,6 @@ from .models import Account
 from django.contrib import messages
 from onlineStrategy.permissions import AuthenticationPermissionsMixin
 from django.urls import reverse_lazy
-
 from django.contrib.auth.views import PasswordChangeView, PasswordResetView, PasswordResetConfirmView, PasswordResetCompleteView
 
 

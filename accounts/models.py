@@ -50,27 +50,27 @@ class Account(AbstractBaseUser):
 
     # Main information block
     email = models.EmailField(max_length=255, unique=True)
-    first_name = models.CharField(max_length=32, default=None)
-    last_name = models.CharField(max_length=32, default=None)
-    middle_name = models.CharField(max_length=32, blank=True)
+    first_name = models.CharField(max_length=64, default=None)
+    last_name = models.CharField(max_length=64, default=None)
+    middle_name = models.CharField(max_length=64, blank=True)
     GENDER_CHOICES = (
         ('М', 'Мужской'),
         ('Ж', 'Женский'),
     )
-    gender = models.CharField(max_length=32, choices=GENDER_CHOICES, default=None, null=True)
+    gender = models.CharField(max_length=8, choices=GENDER_CHOICES, default=None, null=True)
     date_of_birth = models.DateField(blank=True, null=True)
 
     NATIONAL_CHOICES = (
         ('ПР', 'Прочее'),
         ('РФ', 'Российская федерация'),
     )
-    national = models.CharField(max_length=32, choices=NATIONAL_CHOICES, default=None, null=True)
+    national = models.CharField(max_length=64, choices=NATIONAL_CHOICES, default=None, null=True)
     municipality = models.ForeignKey('core.Municipality', on_delete=models.CASCADE, default=None)
 
     # TODO: make validation on client-side
     phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$',
                                  message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
-    phone_number = models.CharField(validators=[phone_regex], max_length=17, blank=True)  # validators should be a list
+    phone_number = models.CharField(validators=[phone_regex], max_length=32, blank=True)  # validators should be a list
 
     # Education information block
     EDUCATION_CHOICES = (
@@ -80,41 +80,41 @@ class Account(AbstractBaseUser):
         ('СПЦ', 'Специалитет'),
         ('МАГ', 'Магистратура'),
     )
-    education_level = models.CharField(max_length=32, choices=EDUCATION_CHOICES, default=None, null=True)
+    education_level = models.CharField(max_length=8, choices=EDUCATION_CHOICES, default=None, null=True)
     education_document_serial = models.CharField(max_length=6, blank=True)
     education_document_number = models.CharField(max_length=7, blank=True)
     education_document_reg_number = models.CharField(max_length=4, blank=True)
     education_document_date = models.DateField(blank=True, null=True)
-    education_document_second_name = models.CharField(max_length=32, blank=True)
-    education_document_first_name = models.CharField(max_length=32, blank=True)
-    education_document_middle_name = models.CharField(max_length=32, blank=True)
-    education_qualify = models.CharField(max_length=32, blank=True)
+    education_document_second_name = models.CharField(max_length=64, blank=True)
+    education_document_first_name = models.CharField(max_length=64, blank=True)
+    education_document_middle_name = models.CharField(max_length=64, blank=True)
+    education_qualify = models.CharField(max_length=128, blank=True)
     EDUCATION_POW_CHOICES = (
         ('Н', 'Нет степени'),
         ('КН', 'Кандидат наук'),
         ('ДОК', 'Доктор наук'),
     )
-    education_pow = models.CharField(max_length=32, choices=EDUCATION_POW_CHOICES, default=None, null=True)
+    education_pow = models.CharField(max_length=8, choices=EDUCATION_POW_CHOICES, default=None, null=True)
     EDUCATION_RANK_CHOICES = (
         ('Н', 'Нет звания'),
         ('КН', 'Доцент'),
         ('ДОК', 'Профессор'),
     )
-    education_rank = models.CharField(max_length=32, choices=EDUCATION_RANK_CHOICES, default=None, null=True)
+    education_rank = models.CharField(max_length=8, choices=EDUCATION_RANK_CHOICES, default=None, null=True)
 
     # Work information block
-    work = models.CharField(max_length=128, blank=True)
-    work_pos = models.CharField(max_length=128, blank=True)
+    work = models.CharField(max_length=255, blank=True)
+    work_pos = models.CharField(max_length=255, blank=True)
     work_exp = models.PositiveIntegerField(blank=True, null=True)
     work_edu_exp = models.PositiveIntegerField(blank=True, null=True)
 
     # Document
     document_serial = models.CharField(max_length=4, blank=True)
     document_number = models.CharField(max_length=6, blank=True)
-    document_department = models.CharField(max_length=128, blank=True)
+    document_department = models.CharField(max_length=255, blank=True)
     document_date = models.DateField(blank=True, null=True)
     document_code_department = models.CharField(max_length=7, blank=True)
-    document_place_birth = models.CharField(max_length=32, blank=True)
+    document_place_birth = models.CharField(max_length=255, blank=True)
 
     # Avatar
     # TODO: change folder name to profiles_pic or smth

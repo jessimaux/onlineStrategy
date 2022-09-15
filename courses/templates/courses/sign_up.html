@@ -10,76 +10,78 @@
                 <div class="app-card-header p-3">
                     <div class="row justify-content-between align-items-center">
                         <div class="col-auto">
-                            <h4>Новая заявка</h4>
-                            <p>{{ course.title }}</p>
+                            <h4>Новая заявка на образовательную программу</h4>
                         </div>
                     </div>
                 </div>
-                <div class="app-card-body p-3">
-                    <div class="row justify-content-between align-items-center">
-                        <div class="col-auto">
-                          {% if form.non_field_errors %}
-                          <div class="alert alert-danger">
-                            {{ form.non_field_errors }}
-                        </div>
-                        {% endif %}
-                        <div class="form-group">
-                            <label for="email">Фамилия</label>
-                            <div class="form-control" readonly>{{ account.last_name }}</div>
-                        </div>
 
-                        <div class="form-group">
-                            <label for="email">Имя</label>
-                            <div class="form-control" readonly>{{ account.first_name }}</div>
-                        </div>
+                <div class="app-card-body px-3">
+                    <div class="item border-bottom py-3">
+                      <div class="row justify-content-between align-items-center">
+                        <div class="col-12">
+                            <div class="item-label fw-bold">Наименование образовательной программы</div>
+                            <div class="item-data">{{ course.title }}</div>
+                        </div><!--//col-->
+                    </div><!--//row-->
+                </div><!--//item-->
 
-                        <div class="form-group">
-                            <label for="email">Отчество</label>
-                            <div class="form-control" readonly>{{ account.middle_name }}</div>
-                        </div>
+                <div class="item border-bottom py-3">
+                  <div class="row justify-content-between align-items-center">
+                    <div class="col-12">
+                        <div class="item-label fw-bold">ФИО</div>
+                        <div class="item-data">{{ account.last_name }} {{ account.first_name }} {{ account.middle_name }}</div>
+                    </div><!--//col-->
+                </div><!--//row-->
+            </div><!--//item-->
 
-                        <div class="form-group">
-                            <label for="email">E-mail</label>
-                            <div class="form-control" readonly>{{ account.email }}</div>
-                        </div>
+            <div class="item border-bottom py-3">
+              <div class="row justify-content-between align-items-center">
+                <div class="col-12">
+                    <div class="item-label fw-bold">E-mail</div>
+                    <div class="item-data">{{ account.email }}</div>
+                </div><!--//col-->
+            </div><!--//row-->
+        </div><!--//item-->
 
-                        <div class="form-group">
-                            <label for="email">Контактный телефон</label>
-                            <div class="form-control" readonly>{{ account.phone_number }}</div>
-                        </div>
+        <div class="item border-bottom py-3">
+          <div class="row justify-content-between align-items-center">
+            <div class="col-12">
+                <div class="item-label fw-bold">Контактный телефон</div>
+                <div class="item-data">{{ account.phone_number }}</div>
+            </div><!--//col-->
+        </div><!--//row-->
+    </div><!--//item-->
 
-                        <div class="form-group">
-                            <label for="email">Регион</label>
-                            <div class="form-control" readonly>{{ account.municipality }}</div>
-                        </div>
+    <div class="item border-bottom py-3">
+      <div class="row justify-content-between align-items-center">
+        <div class="col-12">
+            <div class="item-label fw-bold">Муниципалитет</div>
+            <div class="item-data">{{ account.municipality }}</div>
+        </div><!--//col-->
+    </div><!--//row-->
+</div><!--//item-->
 
-                        <div class="form-group">
-                            <label for="email">Муниципалитет</label>
-                            <div class="form-control" readonly>{{ account.municipality }}</div>
-                        </div>
 
-                        <p class="help-block">Если данные в приведенной форме отличаются от действительных - измените их в своем профиле</p>
-                        <br>
-                        <form method="post">
-                            {% csrf_token %}
+<p class="text-center m-3">Если данные в приведенной форме отличаются от действительных - измените их в своем <a href="profile">профиле.</a></p>
+<form method="post">
+    {% csrf_token %}
 
-                            {% for field in form %}
-                            <div class="form-group">
-                                <label for="city">{{ field.label_tag }}</label>
-                                {{ field }}
-                                {% for error in field.errors %}
-                                <p class="my-2 alert alert-danger">{{ error }}</p>
-                                {% endfor %}
-                            </div>
-                            {% endfor %}
-
-                            <button class="mb-4 btn btn-primary btn-block btn-lg" type="submit">Сохранить</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+    {% for field in form %}
+    <div class="form-group">
+        <label for="city">{{ field.label_tag }}</label>
+        {{ field }}
+        {% for error in field.errors %}
+        <p class="my-2 alert alert-danger">{{ error }}</p>
+        {% endfor %}
     </div>
+    {% endfor %}
+
+    <button class="mb-4 btn btn-primary btn-block btn-lg" type="submit">Сохранить</button>
+</form>
 </div>
 </div>
+</div>
+</div>
+</div>
+
 {% endblock %}

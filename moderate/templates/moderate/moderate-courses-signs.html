@@ -1,0 +1,68 @@
+{% extends 'core/page-layout.html' %}
+{% load widget_tweaks %}
+{% load static %}
+{% block title %}Курсы{% endblock %}
+{% block page %}
+<div class="container">
+  <div class="row g-4 mb-4">
+    <div class="col-12">
+      <div class="app-card app-card-stats-table h-100 shadow-sm">
+        <div class="app-card-header p-3">
+          <div class="row justify-content-between align-items-center">
+            <div class="col-8">
+              <h4 class="app-card-title">Список заявок</h4>
+              <p>{{ course_title }}</p>
+            </div>
+            <div class="col-4">
+              <form class="float-end" method='GET'>
+                <input class="form-control"  placeholder="Поиск" type='text' name='q' value='{{ request.GET.q }}'>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <div class="app-card-body px-4 w-100">
+          <div class="table-responsive">
+            <table class="table app-table-hover mb-0 text-left">
+              <thead>
+                <tr>
+                  <th class="cell fw-bold">ID</th>
+                  <th class="cell fw-bold">Фамилия</th>
+                  <th class="cell fw-bold">Имя</th>
+                  <th class="cell fw-bold">Отчество</th>
+                  <th class="cell fw-bold">Муниципалитет</th>
+                  <th class="cell fw-bold">Статус</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <form method='POST'>
+                  {% csrf_token %}
+                  {{ management_form }}
+                  {% for item, form in object_list %}
+                  <tr>
+                    <td class="cell">{{ item.id }}</td>
+                    <td class="cell">{{ item.account.last_name }}</td>
+                    <td class="cell">{{ item.account.first_name }}</td>
+                    <td class="cell">{{ item.account.middle_name }}</td>
+                    <td class="cell">{{ item.account.municipality }}</td>
+                    <td class="cell">
+                      {{ form.id }}
+                      {{ form.status|attr:"class:form-select" }}
+                    </td>
+                  </tr>
+                  {% empty %}
+                  <p>Заявок нет</p>
+                  {% endfor %}
+                </form>
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

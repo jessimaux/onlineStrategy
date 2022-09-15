@@ -1,0 +1,523 @@
+{% extends 'core/page-layout.html' %}
+{% load widget_tweaks %}
+{% load static %}
+{% block title %}Цифровой профиль{% endblock %}
+{% block page %}
+<div class="container">
+ <div class="row g-4 mb-4">
+  <div class="col-6 col-lg-4">
+    <div class="app-card app-card-account shadow-sm d-flex flex-column p-3">
+      <div class="rect-img-container">
+        <img class="rect-img" src="{{ account.image.url }}" />
+      </div>
+    </div><!--//app-card-->
+  </div><!--//col-->
+
+  <div class="col-6 col-lg-4">
+    <div class="app-card app-card-account shadow-sm d-flex flex-column align-items-start p-1">
+      <div class="app-card-header p-3">
+        <div class="row justify-content-between align-items-center">
+          <div class="col-auto">
+            <h4 class="app-card-title">Профиль</h4>
+          </div><!--//col-->
+        </div><!--//row-->
+      </div><!--//app-card-header-->
+
+
+      <div class="app-card-body px-4 w-100">
+        <div class="item border-bottom py-3">
+          <div class="row justify-content-between align-items-center">
+            <div class="col-auto">
+              <div class="item-label fw-bold">ФИО</div>
+              <div class="item-data">{{ account.last_name }} {{ account.first_name }} {{ account.middle_name }}</div>
+            </div><!--//col-->
+          </div><!--//row-->
+        </div><!--//item-->
+
+        <div class="item border-bottom py-3">
+          <div class="row justify-content-between align-items-center">
+            <div class="col-auto">
+              <div class="item-label fw-bold">Email</div>
+              <div class="item-data">{{ account.email }}</div>
+            </div><!--//col-->
+          </div><!--//row-->
+        </div><!--//item-->
+
+        <div class="item border-bottom py-3">
+          <div class="row justify-content-between align-items-center">
+            <div class="col-auto">
+              <div class="item-label fw-bold">Муниципалитет</div>
+              <div class="item-data">
+                {{ account.municipality }}
+              </div>
+            </div><!--//col-->
+          </div><!--//row-->
+        </div><!--//item-->
+      </div><!--//app-card-body-->
+    </div><!--//app-card-->
+  </div>
+
+
+  <div class="col-6 col-lg-4">
+    <div class="app-card app-card-account shadow-sm d-flex flex-column align-items-start p-1">
+      <div class="app-card-header p-3">
+        <div class="row justify-content-between align-items-center">
+          <div class="col-auto">
+            <h4 class="app-card-title">Методист</h4>
+          </div><!--//col-->
+        </div><!--//row-->
+      </div><!--//app-card-header-->
+
+
+      <div class="app-card-body px-4 w-100">
+        <div class="item border-bottom py-3">
+          <div class="row justify-content-between align-items-center">
+            <div class="col-auto">
+              <div class="item-label fw-bold">ФИО</div>
+              <div class="item-data">{{ method.methodist.last_name }} {{ method.methodist.first_name }} {{ method.methodist.middle_name }}</div>
+            </div><!--//col-->
+          </div><!--//row-->
+        </div><!--//item-->
+
+        <div class="item border-bottom py-3">
+          <div class="row justify-content-between align-items-center">
+            <div class="col-auto">
+              <div class="item-label fw-bold">Email</div>
+              <div class="item-data">{{ method.methodist.email }}</div>
+            </div><!--//col-->
+          </div><!--//row-->
+        </div><!--//item-->
+
+        <div class="item border-bottom py-3">
+          <div class="row justify-content-between align-items-center">
+            <div class="col-auto">
+              <div class="item-label fw-bold">Муниципалитет</div>
+              <div class="item-data">
+                {{ method.methodist.municipality }}
+              </div>
+            </div><!--//col-->
+          </div><!--//row-->
+        </div><!--//item-->
+      </div><!--//app-card-body-->
+    </div><!--//app-card-->
+  </div>
+
+</div>
+
+
+<div class="row g-4 mb-4">
+  <div class="col-6 col-lg-6">
+    <div class="app-card app-card-account shadow-sm d-flex flex-column">
+      <div class="app-card-header p-3">
+        <div class="row justify-content-between align-items-center">
+          <div class="col-auto">
+            <h4 class="app-card-title">Диагностика</h4>
+          </div><!--//col-->
+        </div><!--//row-->
+      </div><!--//app-card-header-->
+
+      <div class="app-card-body px-4 w-100">
+       <canvas id="myChart" width="200" height="200"></canvas>
+       <script type="text/javascript">
+        const ctx = document.getElementById('myChart').getContext('2d')
+
+        const data = {
+          labels: [
+          'Методические компетенции',
+          'Функциональная грамотность',
+          'Психолого-педагогические компетенции',
+          'Предметные компетенции',
+          ],
+          datasets: [{
+            label: 'Dataset',
+            {% if result_exists %}
+            data: [{{ result.0 }}, {{ result.1 }}, {{ result.2 }}, {{ result.3 }}],
+            {% else %}
+            {% endif %}
+            backgroundColor: [
+            'rgb(255, 99, 132)',
+            'rgb(75, 192, 192)',
+            'rgb(255, 205, 86)',
+            'rgb(201, 203, 207)'
+            ]
+          }]
+        };
+
+        const myChart = new Chart (ctx, {
+          type: 'polarArea',
+          data: data,
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+            }
+          }
+        }
+        );
+      </script>
+    </div>
+  </div><!--//app-card-->
+</div><!--//col-->
+
+
+<div class="col-6 col-lg-6">
+  <div class="row app-card-half mb-4">
+    <div class="app-card app-card-stats-table h-100 shadow-sm">
+      <div class="app-card-header p-3">
+        <div class="row justify-content-between align-items-center">
+          <div class="col-auto">
+            <h4 class="app-card-title">Открытые уроки</h4>
+          </div><!--//col-->
+        </div><!--//row-->
+      </div><!--//app-card-header-->
+
+      <div class="app-card-body px-4 w-100">
+        <div class="table-responsive">
+          <table class="table app-table-hover mb-0 text-left">
+            <thead>
+              <tr>
+                <th class="cell fw-bold">Заявка</th>
+                <th class="cell fw-bold">Урок</th>
+                <th class="cell fw-bold">Дата</th>
+                <th class="cell fw-bold">Статус</th>
+                <th class="cell fw-bold"></th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for sign in lpage_obj %}
+              <tr>
+                <td class="cell">{{sign.id}}</td>
+                <td class="cell">{{sign.lesson_title}}</td>
+                <td class="cell">{{sign.date|date:"d.m.Y H:i"}}</td>
+                <td class="cell">{{sign.get_status_display}}</td>
+                <td class="cell"><a href="{% url 'route-lesson-signs-update' sign.id %}">Посмотреть</a></td>
+              </tr>
+              {% empty %}
+              <tr><td class="cell">Заявок нет</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div><!--//table-responsive-->
+
+        {% if lpage_obj.paginator.num_pages > 1 %}
+        <div class="my-3 text-center pagination">
+          <span class="step-links">
+            {% if lpage_obj.has_previous %}
+            <a href="?lpage=1">&laquo; В начало</a>
+            <a href="?lpage={{ lpage_obj.previous_page_number }}">| предыдущая</a>
+            {% endif %}
+
+            <span class="current">
+              Страница {{ lpage_obj.number }} из {{ lpage_obj.paginator.num_pages }}.
+            </span>
+
+            {% if lpage_obj.has_next %}
+            <a href="?lpage={{ lpage_obj.next_page_number }}">следующая | </a>
+            <a href="?lpage={{ lpage_obj.paginator.num_pages }}">В конец &raquo;</a>
+            {% endif %}
+          </span>
+        </div>
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
+
+  <div class="row app-card-half">
+    <div class="app-card app-card-stats-table h-100 shadow-sm">
+      <div class="app-card-header p-3">
+        <div class="row justify-content-between align-items-center">
+          <div class="col-auto">
+            <h4 class="app-card-title">Мои рефлексии</h4>
+          </div><!--//col-->
+        </div><!--//row-->
+      </div><!--//app-card-header-->
+
+      <div class="app-card-body px-4 w-100">
+        <div class="table-responsive">
+          <table class="table app-table-hover mb-0 text-left">
+            <thead>
+              <tr>
+                <th class="cell fw-bold">Номер</th>
+                <th class="cell fw-bold">Материал</th>
+                <th class="cell fw-bold">Статус</th>
+                <th class="cell fw-bold"></th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for reflection in reflections %}
+              <tr>
+                <td class="cell">{{reflection.id}}</td>
+                <td class="cell">{{reflection.route.manual.title}}</td>
+                <td class="cell">{{reflection.get_status_display}}</td>
+                <td class="cell"><a href="{% url 'route-reflection-update' reflection.id %}">Посмотреть</a></td>
+              </tr>
+              {% empty %}
+              <tr><td class="cell">Заявок нет</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div><!--//table-responsive-->
+
+        {% if lpage_obj.paginator.num_pages > 1 %}
+        <div class="my-3 text-center pagination">
+          <span class="step-links">
+            {% if lpage_obj.has_previous %}
+            <a href="?lpage=1">&laquo; В начало</a>
+            <a href="?lpage={{ lpage_obj.previous_page_number }}">| предыдущая</a>
+            {% endif %}
+
+            <span class="current">
+              Страница {{ lpage_obj.number }} из {{ lpage_obj.paginator.num_pages }}.
+            </span>
+
+            {% if lpage_obj.has_next %}
+            <a href="?lpage={{ lpage_obj.next_page_number }}">следующая | </a>
+            <a href="?lpage={{ lpage_obj.paginator.num_pages }}">В конец &raquo;</a>
+            {% endif %}
+          </span>
+        </div>
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+
+<div class="row g-4 mb-4">
+  <div class="col-12">
+    <div class="app-card app-card-stats-table h-100 shadow-sm">
+      <div class="app-card-header p-3">
+        <div class="row justify-content-between align-items-center">
+          <div class="col-auto">
+            <h4 class="app-card-title">Образовательный маршрут</h4>
+          </div>
+        </div>
+      </div>
+
+      <div class="app-card-body px-4 w-100">
+        <div class="table-responsive">
+          <table class="table app-table-hover mb-3 text-left">
+            <thead>
+              <tr>
+                <th class="cell fw-bold">Наименование</th>
+                <th class="cell fw-bold">Тип</th>
+                <th class="cell fw-bold">Описание</th>
+                <th class="cell fw-bold">Статус</th>
+                <th class="cell fw-bold">Доступность</th>
+              </tr>
+            </thead>
+            <tbody>
+             {% for item in route %}
+             <tr>
+              <td class="cell">{{ item.manual.title }}</td>
+              <td class="cell">{{ item.manual.get_type_display }}</td>
+              <td class="cell">{{ item.manual.description }}</td>
+              <td class="cell">{{ item.get_status_display }}</td>
+              <td class="cell">{{ item.manual.link }}</td>
+            </tr>
+            {% empty %}
+            <tr><td class="cell">Заявок нет</td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+
+<div class="row g-4 mb-4">
+  <div class="col-12">
+    <div class="app-card app-card-stats-table h-100 shadow-sm">
+      <div class="app-card-header p-3">
+        <div class="row justify-content-between align-items-center">
+          <div class="col-auto">
+            <h4 class="app-card-title">Заявки на образовательные программы</h4>
+          </div>
+        </div>
+      </div>
+
+      <div class="app-card-body px-4 w-100">
+        <div class="table-responsive">
+          <table class="table app-table-hover mb-3 text-left">
+            <thead>
+              <tr>
+                <th class="cell fw-bold">Заявка</th>
+                <th class="cell fw-bold">Программа</th>
+                <th class="cell fw-bold">Тип</th>
+                <th class="cell fw-bold">Сроки проведения</th>
+                <th class="cell fw-bold">Статус</th>
+                <th class="cell fw-bold"></th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for sign in cpage_obj %}
+              <tr>
+                <td class="cell">{{ sign.id }}</td>
+                <td class="cell">{{ sign.course.title }}</td>
+                <td class="cell">{{ sign.course.get_type_display }}</td>
+                <td class="cell">{{ sign.course.date_start|date:"d.m.Y" }} - {{ sign.course.date_end|date:"d.m.Y" }}</td>
+                <td class="cell">{{ sign.get_status_display }}</td>
+                <td class="cell"><a href="{% url 'course-sign-update' sign.id %}">Подробнее</td>
+                </tr>
+                {% empty %}
+                <tr><td class="cell">Заявок нет</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+
+            </table>
+          </div>
+
+          {% if cpage_obj.paginator.num_pages > 1 %}
+          <div class="my-3 text-center pagination">
+            <span class="step-links">
+              {% if cpage_obj.has_previous %}
+              <a href="?cpage=1">&laquo; В начало</a>
+              <a href="?cpage={{ cpage_obj.previous_page_number }}">| предыдущая</a>
+              {% endif %}
+
+              <span class="current">
+                Страница {{ cpage_obj.number }} из {{ cpage_obj.paginator.num_pages }}.
+              </span>
+
+              {% if cpage_obj.has_next %}
+              <a href="?cpage={{ cpage_obj.next_page_number }}">следующая | </a>
+              <a href="?cpage={{ cpage_obj.paginator.num_pages }}">В конец &raquo;</a>
+              {% endif %}
+            </span>
+          </div>
+          {% endif %}
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<!-- old
+
+<div class="container">
+  <h2 class="my-3">Цифровой профиль пользователя</h2>
+
+  <div class="row bg-white rounded shadow-sm p-3 mt-3">
+    <div class="col-lg-3 p-3">
+        <div class="profile-image-wrap">
+          <img src="{{ account.image.url }}" class="profile-image">
+        </div>
+    </div>
+
+    <div class="col-lg-3 p-3">
+      {{ account.last_name }} {{ account.first_name }} {{ account.middle_name }} <br>
+    </div>
+
+    <div class="col-lg-6">
+      <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+      <script type="text/javascript">
+        google.charts.load("current", {packages:["corechart"]});
+        google.charts.setOnLoadCallback(drawChart);
+        function drawChart() {
+          var data = google.visualization.arrayToDataTable([
+            ['Шкала', 'Результат'],
+            ['Шкала 1', {{ result.0 }}],
+            ['Шкала 2', {{ result.1 }}],
+            ['Шкала 3', {{ result.2 }}],
+            ['Шкала 4', {{ result.3 }}]
+            ]);
+
+          var options = {
+            pieHole: 0.4,
+          };
+
+          var chart = new google.visualization.PieChart(document.getElementById('donutchart'));
+          chart.draw(data, options);
+        }
+      </script>
+      <div id="donutchart"></div>
+    </div>
+  </div>
+
+  <h2 class="my-3">Образовательный маршрут</h2>
+  <div class="sign-table d-none d-sm-block d-block d-sm-none d-md-block mt-3">
+    <div class="row sign-row">
+      <div class="col-md-2">Наименование</div>
+      <div class="col-md-2">Тип</div>
+      <div class="col-md-2">Описание</div>
+      <div class="col-md-2">Статус</div>
+      <div class="col-md-2">Доступность</div>
+      <div class="col-md-2">Операции</div>
+  </div>
+</div>
+
+   {% for item in route %}
+    <div class="sign-table__item" id="item_{{ item.manual.id }}">
+        <div class="row">
+            <div class="col-md-2">{{ item.manual.title }}</div>
+            <div class="col-md-2">{{ item.manual.get_type_display }}</div>
+            <div class="col-md-2">{{ item.manual.description }}</div>
+            <div class="col-md-2">{{ item.get_status_display }}</div>
+            <div class="col-md-2">{{ item.manual.link }}</div>
+            <div class="col-md-2 text-end"></div>
+      </div>
+  </div>
+  {% empty %} <p>Материалов нет</p>
+  {% endfor %}
+
+  <h2 class="my-3">Открытые уроки</h2>
+  <div class="sign-table d-none d-sm-block d-block d-sm-none d-md-block">
+    <div class="row sign-row">
+      <div class="col-md-4">Название</div>
+      <div class="col-md-4">Дата</div>
+      <div class="col-md-2">Статус</div>
+      <div class="col-md-2">Операции</div>
+    </div>
+  </div>
+
+  {% for sign in lesson_signs %}
+  <div class="sign-table__item">
+    <div class="row">
+      <div class="col-md-4">{{sign.lesson_title}}</div>
+      <div class="col-md-4">{{sign.date|date:"d.m.Y H:i"}}</div>
+      <div class="col-md-2">{{sign.get_status_display}}</div>
+      <div class="col-md-2"></div>
+    </div>
+  </div>
+  {% empty %} <p>Заявок нет</p>
+  {% endfor %}
+  {% include "core/pagination.html" %}
+
+</div>
+-->
+{% endblock %}

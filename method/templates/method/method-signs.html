@@ -1,0 +1,65 @@
+{% extends 'core/page-layout.html' %}
+{% load widget_tweaks %}
+{% load static %}
+{% block title %}Заявки на открытые уроки{% endblock %}
+{% block page %}
+<div class="container">
+  <div class="row g-4 mb-4">
+    <div class="col-12">
+      <div class="app-card app-card-stats-table h-100 shadow-sm">
+        <div class="app-card-header p-3">
+          <div class="row justify-content-between align-items-center">
+            <div class="col-8">
+              <h4 class="app-card-title">Заявки на открытые уроки</h4>
+            </div>
+            <div class="col-4">
+              <form class="float-end" method='GET'>
+                <input class="form-control"  placeholder="Поиск" type='text' name='q' value='{{ request.GET.q }}'>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <div class="app-card-body px-4 w-100">
+          <div class="table-responsive">
+            <table class="table app-table-hover mb-3 text-left">
+              <thead>
+                <tr>
+                  <th class="cell fw-bold">Номер заявки</th>
+                  <th class="cell fw-bold">Имя</th>
+                  <th class="cell fw-bold">Фамилия</th>
+                  <th class="cell fw-bold">Отчество</th>
+                  <th class="cell fw-bold">Организация</th>
+                  <th class="cell fw-bold">Запланированная дата</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {% for item in object_list %}
+                <tr>
+                  <td class="cell">{{ item.id }}</a></td>
+                  <td class="cell">{{ item.teacher.first_name }}</td>
+                  <td class="cell">{{ item.teacher.last_name }}</td>
+                  <td class="cell">{{ item.teacher.middle_name }}</td>
+                  <td class="cell">{{ item.teacher.work }}</td>
+                  <td class="cell">{{ item.date|date:"d.m.Y H:i" }}</td>
+                </tr>
+                {% empty %}
+                <tr><td class="cell">Заявок нет</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                {% endfor %}
+                {% include 'core/pagination.html' %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

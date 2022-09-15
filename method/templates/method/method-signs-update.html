@@ -1,0 +1,118 @@
+{% extends 'core/page-layout.html' %}
+{% load widget_tweaks %}
+{% load static %}
+{% block title %}Заявка на проведение открытого занятия{% endblock %}
+{% block page %}
+<div class="container">
+ <div class="row">
+  <div class="col-lg-4 offset-lg-4">
+    <div class="app-card p-1 mb-3">
+      <div class="app-card-header p-3">
+        <div class="row justify-content-between align-items-center">
+          <div class="col-12">
+            <h4>Заявка на проведение открытого занятия</h4>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="app-card-body px-3">
+        <div class="item border-bottom py-3">
+          <div class="row justify-content-between align-items-center">
+            <div class="col-12">
+              <div class="item-label fw-bold">Номер </div>
+              <div class="item-data">{{ object.id }}</div>
+            </div><!--//col-->
+          </div><!--//row-->
+        </div><!--//item-->
+
+        <div class="item border-bottom py-3">
+          <div class="row justify-content-between align-items-center">
+            <div class="col-12">
+              <div class="item-label fw-bold">Название урока</div>
+              <div class="item-data">{{ object.lesson_title }}</div>
+            </div><!--//col-->
+          </div><!--//row-->
+        </div><!--//item-->
+
+        <div class="item border-bottom py-3">
+          <div class="row justify-content-between align-items-center">
+            <div class="col-12">
+              <div class="item-label fw-bold">Описание урока</div>
+              <div class="item-data">{{ object.lesson_description }}</div>
+            </div><!--//col-->
+          </div><!--//row-->
+        </div><!--//item-->
+
+        <div class="item border-bottom py-3">
+          <div class="row justify-content-between align-items-center">
+            <div class="col-12">
+              <div class="item-label fw-bold">План урока</div>
+              <div class="item-data"><a href="{{ object.lesson_plan.url }}">{{ object.filename}}</a></div>
+            </div><!--//col-->
+          </div><!--//row-->
+        </div><!--//item-->
+
+        <div class="item border-bottom py-3">
+          <div class="row justify-content-between align-items-center">
+            <div class="col-12">
+              <div class="item-label fw-bold">Формат проведения</div>
+              <div class="item-data">{{ object.get_meet_type_display }}</a></div>
+            </div><!--//col-->
+          </div><!--//row-->
+        </div><!--//item-->
+
+        <div class="item border-bottom py-3">
+          <div class="row justify-content-between align-items-center">
+            <div class="col-12">
+              {% if object.meet_type == "ОЧНО" %}
+              <div class="item-label fw-bold">Место проведения</div>
+              {% else %}
+              <div class="item-label fw-bold">Приглашение на видеоконференцию</div>
+              {% endif %}
+              <div class="item-data">{{ object.meet_link }}</a></div>
+            </div><!--//col-->
+          </div><!--//row-->
+        </div><!--//item-->
+
+
+        <div class="item py-3">
+          <div class="row justify-content-between align-items-center">
+            <div class="col-12">
+              <form method="post">
+                {% csrf_token %}
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                  {{ form.non_field_errors }}
+                </div>
+                {% endif %}
+
+                <div class="form-group form-group-required">
+                  <label>Статус</label>
+                  {{ form.status|attr:"class:form-select"|attr:"required" }}
+                  {% for error in form.status.errors %}
+                  <p class="my-2 alert alert-danger">{{ error }}</p>
+                  {% endfor %}
+                </div>
+
+                <div class="form-group form-group-required">
+                  <label>Комментарий методиста</label>
+                  {{ form.methodist_comment|attr:"class:form-control"}}
+                  {% for error in form.methodist_comment.errors %}
+                  <p class="my-2 alert alert-danger">{{ error }}</p>
+                  {% endfor %}
+                </div>
+
+                {% if object.status != 'ОТКЛ' %}
+                <button class="mb-4 btn btn-primary btn-block btn-lg" type="submit">Сохранить</button>
+                {% endif %}
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+{% endblock %}

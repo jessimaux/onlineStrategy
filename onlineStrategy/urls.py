@@ -5,10 +5,13 @@ from django.conf.urls.static import static
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
     path('', include('core.urls')),
     path('', include('accounts.urls')),
     path('', include('courses.urls')),
+    path('', include('diagnostics.urls')),
+    path('', include('method.urls')),
+    path('', include('moderate.urls')),
+    path('', include('route.urls')),
 ]
 
 if settings.DEBUG:

@@ -1,0 +1,88 @@
+{% extends 'core/page-layout.html' %}
+{% load widget_tweaks %}
+{% load static %}
+{% block title %}Редактирование рефлексии{% endblock %}
+{% block page %}
+<div class="container">
+  <div class="row">
+    <div class="col-lg-4 offset-lg-4">
+      <div class="app-card p-1 mb-3">
+        <div class="app-card-header p-3">
+          <div class="row justify-content-between align-items-center">
+            <div class="col-12">
+              <h4>Редактирование рефлексии</h4>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="app-card-body px-3">
+          <div class="item border-bottom py-3">
+            <div class="row justify-content-between align-items-center">
+              <div class="col-12">
+                <div class="item-label fw-bold">Номер</div>
+                <div class="item-data">{{ object.id }}</div>
+              </div><!--//col-->
+            </div><!--//row-->
+          </div><!--//item-->
+
+          <div class="item border-bottom py-3">
+            <div class="row justify-content-between align-items-center">
+              <div class="col-12">
+                <div class="item-label fw-bold">Статус</div>
+                <div class="item-data">{{ object.get_status_display }}</div>
+              </div><!--//col-->
+            </div><!--//row-->
+          </div><!--//item-->
+
+          <div class="item border-bottom py-3">
+            <div class="row justify-content-between align-items-center">
+              <div class="col-12">
+                <div class="item-label fw-bold">Материал</div>
+                <div class="item-data">{{ object.route.manual.title }}</div>
+              </div><!--//col-->
+            </div><!--//row-->
+          </div><!--//item-->
+
+          <div class="item border-bottom py-3">
+            <div class="row justify-content-between align-items-center">
+              <div class="col-12">
+                <div class="item-label fw-bold">Описание</div>
+                <div class="item-data">{{ object.route.manual.description }}</div>
+              </div><!--//col-->
+            </div><!--//row-->
+          </div><!--//item-->
+
+
+          <div class="item py-3">
+            <div class="row justify-content-between align-items-center">
+              <div class="col-12">
+                <form method="post">
+                  {% csrf_token %}
+                  {% if form.non_field_errors %}
+                  <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                  </div>
+                  {% endif %}
+
+                  <div class="form-group form-group-required">
+                    <label>Рефлексия</label>
+                    {{ form.text|attr:"class:form-control"|attr:"required"}}
+                    {% for error in form.methodist_comment.errors %}
+                    <p class="my-2 alert alert-danger">{{ error }}</p>
+                    {% endfor %}
+                  </div>
+
+                  {% if object.status == 'СМОТР' and user.id == object.route.account_id %}
+                  <button class="mb-4 btn btn-primary btn-block btn-lg" type="submit">Сохранить</button>
+                  {% endif %}
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
