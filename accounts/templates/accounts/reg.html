@@ -56,14 +56,6 @@
         </div>
 
         <div class="form-group form-group-required">
-            <label for="municipality">Муниципалитет</label>
-            {{ form.municipality|attr:"class:form-select"|attr:"value" }}
-            {% for error in form.municipality.errors %}
-            <p class="my-2 alert alert-danger">{{ error }}</p>
-            {% endfor %}
-        </div>
-
-        <div class="form-group form-group-required">
             <label for="password">Пароль</label>
             {{ form.password1|attr:"class: mb-2 form-control"|attr:"placeholder:Введите пароль"|attr:"required"|attr:"value" }}
             <p class="help-block">Пароль должен содержать не менее 8 символов и не может состоять только из цифр.</p>

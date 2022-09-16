@@ -13,11 +13,10 @@ class RegisterForm(UserCreationForm):
     middle_name = forms.CharField(max_length=32, required=False)
     date_of_birth = forms.DateField()
     f_agree = forms.BooleanField()
-    municipality = forms.ModelChoiceField(queryset=Municipality.objects.all(), empty_label='')
 
     class Meta:
         model = Account
-        fields = ('email', 'first_name', 'last_name', 'middle_name', 'date_of_birth', 'municipality')
+        fields = ('email', 'first_name', 'last_name', 'middle_name', 'date_of_birth')
 
 
 class AccountUpdateForm(forms.ModelForm):
