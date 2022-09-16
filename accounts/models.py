@@ -30,12 +30,12 @@ class AccountsManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_user(self, email, first_name, last_name, date_of_birth, phone_number,  password=None, **extra_fields):
+    def create_user(self, email, first_name, last_name, date_of_birth, password=None, **extra_fields):
         extra_fields.setdefault('staff', False)
         extra_fields.setdefault('superuser', False)
-        return self._create_user(email, first_name, last_name, date_of_birth, phone_number, password, **extra_fields)
+        return self._create_user(email, first_name, last_name, date_of_birth, password, **extra_fields)
 
-    def create_superuser(self, email, first_name, last_name, date_of_birth, phone_number, password, **extra_fields):
+    def create_superuser(self, email, first_name, last_name, date_of_birth, password, **extra_fields):
         extra_fields.setdefault('staff', True)
         extra_fields.setdefault('superuser', True)
         if extra_fields.get('staff') is not True:
@@ -43,7 +43,7 @@ class AccountsManager(BaseUserManager):
         if extra_fields.get('superuser') is not True:
             raise ValueError('Superuser must have superuser=True.')
 
-        return self._create_user(email, first_name, last_name, date_of_birth, phone_number, password, **extra_fields)
+        return self._create_user(email, first_name, last_name, date_of_birth, password, **extra_fields)
 
 
 class Account(AbstractBaseUser):
