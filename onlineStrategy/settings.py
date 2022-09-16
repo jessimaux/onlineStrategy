@@ -85,12 +85,12 @@ WSGI_APPLICATION = 'onlineStrategy.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'onlinestrategy',
-        'USER': 'django',
-        'PASSWORD': '4411f11m',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'iom',
+        'USER': 'postgres',
+        'PASSWORD': '4411f11',
         'HOST': 'localhost',
-        'PORT': '3306',
+        'PORT': '5432',
     }
 }
 
