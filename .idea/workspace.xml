@@ -2,63 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a938b9a9-3c06-418f-b1e0-d46664c9f12c" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/diagnostics/forms.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/diagnostics/urls.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/method/forms.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/method/urls.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/moderate/forms.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/moderate/urls.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/route/forms.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/route/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/onlineStrategy.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/onlineStrategy.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/accounts/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/accounts/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/accounts/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/accounts/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/forms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/templates/core/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/core/templates/core/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/templates/core/method-profiles-item.html" beforeDir="false" afterPath="$PROJECT_DIR$/method/templates/method/method-profiles-item.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/templates/core/method-profiles.html" beforeDir="false" afterPath="$PROJECT_DIR$/method/templates/method/method-profiles.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/templates/core/method-reflections-update.html" beforeDir="false" afterPath="$PROJECT_DIR$/method/templates/method/method-reflections-update.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/templates/core/method-signs-update.html" beforeDir="false" afterPath="$PROJECT_DIR$/method/templates/method/method-signs-update.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/templates/core/method-signs.html" beforeDir="false" afterPath="$PROJECT_DIR$/method/templates/method/method-signs.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/templates/core/method.html" beforeDir="false" afterPath="$PROJECT_DIR$/method/templates/method/method.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/templates/core/moderate-courses-signs.html" beforeDir="false" afterPath="$PROJECT_DIR$/moderate/templates/moderate/moderate-courses-signs.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/templates/core/moderate-courses.html" beforeDir="false" afterPath="$PROJECT_DIR$/moderate/templates/moderate/moderate-courses.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/templates/core/moderate-diagnostics-create.html" beforeDir="false" afterPath="$PROJECT_DIR$/diagnostics/templates/diagnostics/diagnostics-create.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/templates/core/moderate-diagnostics-update.html" beforeDir="false" afterPath="$PROJECT_DIR$/diagnostics/templates/diagnostics/diagnostics-update.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/templates/core/moderate-diagnostics.html" beforeDir="false" afterPath="$PROJECT_DIR$/moderate/templates/moderate/moderate-diagnostics.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/templates/core/moderate-manuals-create.html" beforeDir="false" afterPath="$PROJECT_DIR$/route/templates/route/manuals-create.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/templates/core/moderate-manuals-update.html" beforeDir="false" afterPath="$PROJECT_DIR$/route/templates/route/manuals-update.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/templates/core/moderate-manuals.html" beforeDir="false" afterPath="$PROJECT_DIR$/moderate/templates/moderate/moderate-manuals.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/templates/core/moderate-methodist.html" beforeDir="false" afterPath="$PROJECT_DIR$/moderate/templates/moderate/moderate-methodist.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/templates/core/moderate-profile-card.html" beforeDir="false" afterPath="$PROJECT_DIR$/moderate/templates/moderate/moderate-profile-card.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/templates/core/moderate-profiles.html" beforeDir="false" afterPath="$PROJECT_DIR$/moderate/templates/moderate/moderate-profiles.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/templates/core/page-layout.html" beforeDir="false" afterPath="$PROJECT_DIR$/core/templates/core/page-layout.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/templates/core/route-diagnostics-item.html" beforeDir="false" afterPath="$PROJECT_DIR$/route/templates/route/route-diagnostics-item.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/templates/core/route-diagnostics-result.html" beforeDir="false" afterPath="$PROJECT_DIR$/route/templates/route/route-diagnostics-result.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/templates/core/route-diagnostics.html" beforeDir="false" afterPath="$PROJECT_DIR$/route/templates/route/route-diagnostics.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/templates/core/route-item.html" beforeDir="false" afterPath="$PROJECT_DIR$/route/templates/route/route-item.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/templates/core/route-manuals.html" beforeDir="false" afterPath="$PROJECT_DIR$/route/templates/route/route-manuals.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/templates/core/route-reflection-create.html" beforeDir="false" afterPath="$PROJECT_DIR$/route/templates/route/route-reflection-create.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/templates/core/route-reflection-update.html" beforeDir="false" afterPath="$PROJECT_DIR$/route/templates/route/route-reflection-update.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/templates/core/route-signs-up.html" beforeDir="false" afterPath="$PROJECT_DIR$/route/templates/route/route-lesson-signs-up.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/templates/core/route-signs-update.html" beforeDir="false" afterPath="$PROJECT_DIR$/route/templates/route/route-lesson-signs-update.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/templates/core/route.html" beforeDir="false" afterPath="$PROJECT_DIR$/route/templates/route/route.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/templates/core/test.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/tools.py" beforeDir="false" afterPath="$PROJECT_DIR$/route/tools.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/courses/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/courses/forms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/courses/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/courses/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/courses/templates/courses/course_create.html" beforeDir="false" afterPath="$PROJECT_DIR$/courses/templates/courses/course_create.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/courses/templates/courses/course_update.html" beforeDir="false" afterPath="$PROJECT_DIR$/courses/templates/courses/course_update.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/courses/templates/courses/sign_up.html" beforeDir="false" afterPath="$PROJECT_DIR$/courses/templates/courses/sign_up.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/courses/templates/courses/sign_update.html" beforeDir="false" afterPath="$PROJECT_DIR$/courses/templates/courses/sign_update.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/courses/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/courses/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/courses/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/courses/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/onlineStrategy/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/onlineStrategy/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/onlineStrategy/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/onlineStrategy/urls.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -84,7 +30,7 @@
     &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;
+    &quot;settings.editor.selected.configurable&quot;: &quot;terminal&quot;
   }
 }</component>
   <component name="RecentsManager">
