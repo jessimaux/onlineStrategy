@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import RegexValidator
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from core.models import Settings
 
 
 class AccountsManager(BaseUserManager):
@@ -123,7 +124,7 @@ class Account(AbstractBaseUser):
     image = models.ImageField(upload_to='images', default='images/default.png')
 
     # Technical field
-    is_active = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
     methodist = models.BooleanField(default=False)
     moderator = models.BooleanField(default=False)
     staff = models.BooleanField(default=False)

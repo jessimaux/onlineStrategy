@@ -1,0 +1,26 @@
+[
+  {
+    "model": "core.settings",
+    "pk": 1,
+    "fields": {
+      "name": "auto_method_assign",
+      "value": true
+    }
+  },
+  {
+    "model": "core.settings",
+    "pk": 2,
+    "fields": {
+      "name": "use_registration_confirmation",
+      "value": true
+    }
+  },
+  {
+    "model": "core.settings",
+    "pk": 3,
+    "fields": {
+      "name": "use_email_notification",
+      "value": false
+    }
+  }
+]

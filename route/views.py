@@ -143,7 +143,10 @@ class RouteReflectionCreateView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('route')
 
     def dispatch(self, request, *args, **kwargs):
-        reflection_exists = RouteReflection.objects.get(route_id=self.kwargs['pk'])
+        try:
+            reflection_exists = RouteReflection.objects.get(route_id=self.kwargs['pk'])
+        except RouteReflection.DoesNotExist:
+            reflection_exists = None
         if reflection_exists and reflection_exists.status != 'ОТКЛ':
             return HttpResponseRedirect(reverse_lazy('route'))
         else:

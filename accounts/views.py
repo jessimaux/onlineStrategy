@@ -13,6 +13,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_text
 from django.core.mail import EmailMessage
 from .models import Account
+from core.models import Settings
 from django.contrib import messages
 from onlineStrategy.permissions import AuthenticationPermissionsMixin
 from django.urls import reverse_lazy
@@ -29,21 +30,24 @@ class RegView(AuthenticationPermissionsMixin, FormView):
     success_url = 'index'
 
     def form_valid(self, form):
-        user = form.save()
-        email = form.cleaned_data.get('email')
-        current_site = get_current_site(self.request)
-        mail_subject = 'Регистрация в цифровой экосистеме ГАУДПО ЛО ИРО | ' + str(current_site)
-        message = render_to_string('accounts/acc_activate_email.html', {
-            'user': self.request.user,
-            'domain': current_site.domain,
-            'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-            'token': account_activation_token.make_token(user),
-        })
-        email = EmailMessage(
-            mail_subject, message, to=[email]
-        )
-        email.send()
-        messages.success(self.request, 'Пожалуйста, подтвердите ваш email адрес для завершения регистрации')
+        user = form.save(commit=False)
+        if Settings.objects.get(name="email_registration_confirmation").value == True:
+            user.is_active = False
+            email = form.cleaned_data.get('email')
+            current_site = get_current_site(self.request)
+            mail_subject = 'Регистрация в цифровой экосистеме ГАУДПО ЛО ИРО | ' + str(current_site)
+            message = render_to_string('accounts/acc_activate_email.html', {
+                'user': self.request.user,
+                'domain': current_site.domain,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'token': account_activation_token.make_token(user),
+            })
+            email = EmailMessage(
+                mail_subject, message, to=[email]
+            )
+            email.send()
+            messages.success(self.request, 'Пожалуйста, подтвердите ваш email адрес для завершения регистрации')
+        user.save()
         return redirect('index')
 
 
